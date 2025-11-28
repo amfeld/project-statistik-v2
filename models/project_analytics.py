@@ -278,16 +278,16 @@ class ProjectAnalytics(models.Model):
         invoice_lines.mapped('move_id.payment_state')
         invoice_lines.mapped('move_id.move_type')
         invoice_lines.mapped('move_id.reversed_entry_id')
-        invoice_lines.mapped('move_id.reversal_move_id')
 
         for line in invoice_lines:
             if not line.analytic_distribution:
                 continue
 
-            # Skip FULL reversals (both directions exist = complete cancellation)
-            # But count credit notes/refunds normally (they reduce revenue)
-            if line.move_id.reversed_entry_id and line.move_id.reversal_move_id:
-                # This is a complete reversal cycle - skip both entries
+            # Skip FULL reversals (complete cancellation)
+            # Only check reversed_entry_id (the field that always exists)
+            # A reversal has reversed_entry_id set, the original doesn't
+            if line.move_id.reversed_entry_id:
+                # This is a reversal entry - skip it
                 continue
 
             # Parse the analytic_distribution JSON
@@ -357,16 +357,15 @@ class ProjectAnalytics(models.Model):
         # Prefetch for performance
         bill_lines.mapped('move_id.move_type')
         bill_lines.mapped('move_id.reversed_entry_id')
-        bill_lines.mapped('move_id.reversal_move_id')
 
         for line in bill_lines:
             if not line.analytic_distribution:
                 continue
 
-            # Skip FULL reversals (both directions exist = complete cancellation)
-            # But count refunds normally (they reduce costs)
-            if line.move_id.reversed_entry_id and line.move_id.reversal_move_id:
-                # This is a complete reversal cycle - skip both entries
+            # Skip FULL reversals (complete cancellation)
+            # Only check reversed_entry_id (the field that always exists)
+            if line.move_id.reversed_entry_id:
+                # This is a reversal entry - skip it
                 continue
 
             # Parse the analytic_distribution JSON

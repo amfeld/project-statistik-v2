@@ -7,7 +7,7 @@ _logger = logging.getLogger(__name__)
 
 class ProjectAnalytics(models.Model):
     _inherit = 'project.project'
-    _description = 'Project Analytics Extension'
+    _description = _('Project Analytics Extension')
 
     client_name = fields.Char(
         string='Name of Client',
@@ -28,21 +28,21 @@ class ProjectAnalytics(models.Model):
         compute='_compute_financial_data',
         store=True,
         group_operator='sum',
-        help="Total amount invoiced to customers for this project (NET/NETTO). This includes all posted customer invoices and credit notes that are linked to this project via analytic distribution."
+        help="Total amount invoiced to customers for this project. This includes all posted customer invoices and credit notes that are linked to this project via analytic distribution."
     )
     customer_paid_amount = fields.Float(
         string='Total Paid Amount',
         compute='_compute_financial_data',
         store=True,
         group_operator='sum',
-        help="Total amount actually paid by customers for this project (NET/NETTO). This is calculated from invoice payments and shows how much money has actually been received."
+        help="Total amount actually paid by customers for this project. This is calculated from invoice payments and shows how much money has actually been received."
     )
     customer_outstanding_amount = fields.Float(
         string='Outstanding Amount',
         compute='_compute_financial_data',
         store=True,
         group_operator='sum',
-        help="Amount still owed by customers for this project (NET/NETTO). This is the difference between what has been invoiced and what has been paid (Invoiced - Paid). A positive value means money is still owed."
+        help="Amount still owed by customers for this project. This is the difference between what has been invoiced and what has been paid (Invoiced - Paid). A positive value means money is still owed."
     )
 
     # Vendor Bill fields
@@ -51,7 +51,7 @@ class ProjectAnalytics(models.Model):
         compute='_compute_financial_data',
         store=True,
         group_operator='sum',
-        help="Total amount of vendor bills for this project (NET/NETTO). This includes all posted vendor bills and refunds linked to this project via analytic distribution. These are external costs from suppliers."
+        help="Total amount of vendor bills (Lieferantenrechnungen) for this project. This includes all posted vendor bills and refunds linked to this project via analytic distribution. These are external costs from suppliers."
     )
 
     # Skonto (Cash Discount) fields
@@ -70,39 +70,7 @@ class ProjectAnalytics(models.Model):
         help="Cash discounts received from vendors for early payment (Erhaltene Skonti). This reduces project costs and increases profit. Calculated from income accounts 4730-4733 and asset account 2670."
     )
 
-    # Cost fields
-    total_costs_net = fields.Float(
-        string='Net Costs (without tax)',
-        compute='_compute_financial_data',
-        store=True,
-        group_operator='sum',
-        help="Internal project costs without tax (Nettokosten). This includes labor costs from timesheets plus other internal costs. Vendor bills are tracked separately. This is the net amount before tax."
-    )
-    total_costs_with_tax = fields.Float(
-        string='Total Costs (with tax)',
-        compute='_compute_financial_data',
-        store=True,
-        group_operator='sum',
-        help="Internal project costs with tax included (Bruttokosten). This is the total internal costs including VAT. Vendor bills are tracked separately and already include their taxes. NOTE: This field is deprecated - use total_costs_net for accurate calculations."
-    )
-
-    # Summary fields
-    profit_loss = fields.Float(
-        string='Profit/Loss Amount',
-        compute='_compute_financial_data',
-        store=True,
-        group_operator='sum',
-        help="Project profitability (Gewinn/Verlust). Calculated as NET amounts: (Invoiced Amount - Customer Skonto) - (Vendor Bills - Vendor Skonto + Internal Net Costs). A positive value indicates profit, negative indicates loss."
-    )
-    negative_difference = fields.Float(
-        string='Negative Differences (losses)',
-        compute='_compute_financial_data',
-        store=True,
-        group_operator='sum',
-        help="Total project losses as a positive number (Verluste). This shows the absolute value of negative profit/loss. If profit/loss is positive, this field is 0. Useful for tracking and reporting total losses."
-    )
-
-    # Labor/Timesheet fields
+      # Labor/Timesheet fields
     total_hours_booked = fields.Float(
         string='Total Hours Booked',
         compute='_compute_financial_data',
@@ -118,6 +86,40 @@ class ProjectAnalytics(models.Model):
         help="Total cost of labor based on timesheets (Personalkosten). Calculated from timesheet entries multiplied by employee hourly rates. This is a major component of internal project costs."
     )
 
+
+    # Cost fields
+    total_costs_net = fields.Float(
+        string='Net Costs (without tax)',
+        compute='_compute_financial_data',
+        store=True,
+        group_operator='sum',
+        help="Internal project costs without tax (Nettokosten). This includes labor costs from timesheets plus other internal costs. Vendor bills are tracked separately. This is the net amount before tax."
+    )
+    total_costs_with_tax = fields.Float(
+        string='Total Costs (with tax)',
+        compute='_compute_financial_data',
+        store=True,
+        group_operator='sum',
+        help="Internal project costs with tax included (Bruttokosten). This is the total internal costs including VAT. Vendor bills are tracked separately and already include their taxes."
+    )
+
+    # Summary fields
+    profit_loss = fields.Float(
+        string='Profit/Loss Amount',
+        compute='_compute_financial_data',
+        store=True,
+        group_operator='sum',
+        help="Project profitability (Gewinn/Verlust). Calculated as: (Invoiced Amount - Customer Skonto) - (Vendor Bills - Vendor Skonto + Internal Net Costs). A positive value indicates profit, negative indicates loss."
+    )
+    negative_difference = fields.Float(
+        string='Negative Differences (losses)',
+        compute='_compute_financial_data',
+        store=True,
+        group_operator='sum',
+        help="Total project losses as a positive number (Verluste). This shows the absolute value of negative profit/loss. If profit/loss is positive, this field is 0. Useful for tracking and reporting total losses."
+    )
+
+
     @api.depends('partner_id', 'user_id')
     def _compute_financial_data(self):
         """
@@ -125,8 +127,6 @@ class ProjectAnalytics(models.Model):
         This is the single source of truth for Odoo v18 accounting.
 
         Uses the standard Odoo project analytic plan (analytic.analytic_plan_projects).
-        
-        IMPORTANT: All amounts are NET (without tax) for consistency in German accounting.
 
         Note: We depend on partner_id and user_id (guaranteed core fields) rather than
         account_id or sale_line_id which may not exist if certain modules aren't installed.
@@ -148,29 +148,52 @@ class ProjectAnalytics(models.Model):
             labor_costs = 0.0
 
             # Get the analytic account associated with the project (projects plan ONLY)
-            analytic_account = self._get_project_analytic_account(project)
-            
+            analytic_account = None
+
+            # Get the standard project analytic plan reference
+            try:
+                project_plan = self.env.ref('analytic.analytic_plan_projects', raise_if_not_found=False)
+            except Exception:
+                project_plan = None
+
+            if hasattr(project, 'analytic_account_id') and project.analytic_account_id:
+                # Verify this is the project plan
+                if project_plan and hasattr(project.analytic_account_id, 'plan_id') and project.analytic_account_id.plan_id == project_plan:
+                    analytic_account = project.analytic_account_id
+
+            # Fallback to account_id if analytic_account_id not found
+            if not analytic_account and hasattr(project, 'account_id') and project.account_id:
+                if project_plan and hasattr(project.account_id, 'plan_id') and project.account_id.plan_id == project_plan:
+                    analytic_account = project.account_id
+
             if not analytic_account:
-                project.customer_invoiced_amount = 0.0
-                project.customer_paid_amount = 0.0
-                project.customer_outstanding_amount = 0.0
-                project.vendor_bills_total = 0.0
-                project.customer_skonto_taken = 0.0
-                project.vendor_skonto_received = 0.0
-                project.total_costs_net = 0.0
-                project.total_costs_with_tax = 0.0
-                project.profit_loss = 0.0
-                project.negative_difference = 0.0
-                project.total_hours_booked = 0.0
-                project.labor_costs = 0.0
+                _logger.warning(
+                    f"Project '{project.name}' (ID: {project.id}) has no analytic account linked. "
+                    f"Financial data cannot be calculated. Please ensure: "
+                    f"1) Analytic Accounting is enabled in Accounting settings, "
+                    f"2) This project has an analytic account assigned (Projects plan), "
+                    f"3) Invoice/bill lines have analytic_distribution set."
+                )
+                project.customer_invoiced_amount = -1.0
+                project.customer_paid_amount = -1.0
+                project.customer_outstanding_amount = -1.0
+                project.vendor_bills_total = -1.0
+                project.customer_skonto_taken = -1.0
+                project.vendor_skonto_received = -1.0
+                project.total_costs_net = -1.0
+                project.total_costs_with_tax = -1.0
+                project.profit_loss = -1.0
+                project.negative_difference = -1.0
+                project.total_hours_booked = -1.0
+                project.labor_costs = -1.0
                 continue
 
-            # 1. Calculate Customer Invoices (Revenue) - NET amounts only
+            # 1. Calculate Customer Invoices (Revenue)
             customer_data = self._get_customer_invoices_from_analytic(analytic_account)
             customer_invoiced_amount = customer_data['invoiced']
             customer_paid_amount = customer_data['paid']
 
-            # 2. Calculate Vendor Bills (Direct Costs) - NET amounts only
+            # 2. Calculate Vendor Bills (Direct Costs)
             vendor_data = self._get_vendor_bills_from_analytic(analytic_account)
             vendor_bills_total = vendor_data['total']
 
@@ -187,18 +210,15 @@ class ProjectAnalytics(models.Model):
             # 5. Calculate Other Costs (non-timesheet, non-bill analytic lines)
             other_costs = self._get_other_costs_from_analytic(analytic_account)
 
-            # 6. Calculate totals - all NET amounts
+            # 6. Calculate totals
             total_costs_net = labor_costs + other_costs
-            
-            # total_costs_with_tax is deprecated but kept for backwards compatibility
-            total_costs_with_tax = total_costs_net
+            total_costs_with_tax = self._calculate_costs_with_tax(analytic_account, labor_costs, other_costs)
 
             customer_outstanding_amount = customer_invoiced_amount - customer_paid_amount
 
-            # 7. Calculate Profit/Loss (NET basis with Skonto adjustments)
-            # All amounts are NET (without tax) for consistency
-            # Revenue: Invoiced amount (NET) - Skonto taken by customers
-            # Costs: Vendor bills (NET) - Skonto received + internal costs (NET)
+            # 6. Calculate Profit/Loss (Accrual basis with Skonto adjustments)
+            # Revenue: Invoiced amount - Skonto taken by customers
+            # Costs: Vendor bills - Skonto received + internal costs
             adjusted_revenue = customer_invoiced_amount - customer_skonto_taken
             adjusted_vendor_costs = vendor_bills_total - vendor_skonto_received
             profit_loss = adjusted_revenue - (adjusted_vendor_costs + total_costs_net)
@@ -218,44 +238,13 @@ class ProjectAnalytics(models.Model):
             project.total_hours_booked = total_hours_booked
             project.labor_costs = labor_costs
 
-    def _get_project_analytic_account(self, project):
-        """
-        Get project's analytic account with proper error handling.
-        Returns the analytic account that belongs to the project plan, or None.
-        """
-        try:
-            project_plan = self.env.ref('analytic.analytic_plan_projects', raise_if_not_found=False)
-        except Exception as e:
-            _logger.warning(f"Could not load project plan reference: {e}")
-            return None
-        
-        if not project_plan:
-            _logger.warning("Project analytic plan not found in system")
-            return None
-        
-        # Check analytic_account_id first
-        if hasattr(project, 'analytic_account_id') and project.analytic_account_id:
-            if hasattr(project.analytic_account_id, 'plan_id') and project.analytic_account_id.plan_id == project_plan:
-                return project.analytic_account_id
-        
-        # Fallback to account_id
-        if hasattr(project, 'account_id') and project.account_id:
-            if hasattr(project.account_id, 'plan_id') and project.account_id.plan_id == project_plan:
-                return project.account_id
-        
-        _logger.info(f"Project '{project.name}' (ID: {project.id}) has no analytic account linked to project plan")
-        return None
-
     def _get_customer_invoices_from_analytic(self, analytic_account):
         """
         Get customer invoices and credit notes via analytic_distribution in account.move.line.
         This is the Odoo v18 way to link invoices to projects.
 
-        IMPORTANT: 
-        - We calculate project portion based on invoice LINE amounts (NET/NETTO only)
-        - Uses price_subtotal (without tax) for consistency
-        - Different lines may go to different projects
-        - Only fully paid invoices are counted as paid (conservative approach)
+        IMPORTANT: We must calculate the project portion based on invoice LINE amounts,
+        not full invoice amounts, because different lines may go to different projects.
 
         Handles both:
         - out_invoice: Customer invoices (positive revenue)
@@ -264,6 +253,7 @@ class ProjectAnalytics(models.Model):
         result = {'invoiced': 0.0, 'paid': 0.0}
 
         # Find all posted customer invoice/credit note lines with this analytic account
+        # Filter by account_type to ensure we only get revenue/receivable lines
         invoice_lines = self.env['account.move.line'].search([
             ('analytic_distribution', '!=', False),
             ('parent_state', '=', 'posted'),
@@ -274,20 +264,12 @@ class ProjectAnalytics(models.Model):
             ('account_id.account_type', '=', 'income_other')
         ])
 
-        # Prefetch for performance
-        invoice_lines.mapped('move_id.payment_state')
-        invoice_lines.mapped('move_id.move_type')
-        invoice_lines.mapped('move_id.reversed_entry_id')
-
         for line in invoice_lines:
             if not line.analytic_distribution:
                 continue
 
-            # Skip FULL reversals (complete cancellation)
-            # Only check reversed_entry_id (the field that always exists)
-            # A reversal has reversed_entry_id set, the original doesn't
-            if line.move_id.reversed_entry_id:
-                # This is a reversal entry - skip it
+            # Skip reversal entries (Storno) - they cancel out the original entry
+            if line.move_id.reversed_entry_id or line.move_id.reversal_move_id:
                 continue
 
             # Parse the analytic_distribution JSON
@@ -301,11 +283,12 @@ class ProjectAnalytics(models.Model):
                     # Get the percentage allocated to this project for THIS LINE
                     percentage = distribution.get(str(analytic_account.id), 0.0) / 100.0
 
+                    # Get the invoice to calculate payment proportion
                     invoice = line.move_id
 
                     # Calculate this line's contribution to the project
-                    # Use price_subtotal (NET amount without taxes)
-                    line_amount = line.price_subtotal * percentage
+                    # Use price_total (includes taxes) to match invoice.amount_total
+                    line_amount = line.price_total * percentage
 
                     # Credit notes (out_refund) reduce revenue, so subtract them
                     if invoice.move_type == 'out_refund':
@@ -313,18 +296,15 @@ class ProjectAnalytics(models.Model):
 
                     result['invoiced'] += line_amount
 
-                    # Calculate paid amount - CONSERVATIVE approach
-                    # Only count invoices that are fully paid to avoid ambiguity
-                    # (We don't know which lines were paid in partial payments)
-                    if invoice.payment_state == 'paid':
-                        result['paid'] += line_amount
-                    elif invoice.payment_state == 'in_payment':
-                        # Invoice is being paid but not fully paid yet
-                        # Don't count as paid (conservative approach)
-                        pass
+                    # Calculate paid amount for this line
+                    # Payment proportion = (invoice.amount_total - invoice.amount_residual) / invoice.amount_total
+                    if abs(invoice.amount_total) > 0:
+                        payment_ratio = (invoice.amount_total - invoice.amount_residual) / invoice.amount_total
+                        line_paid = line_amount * payment_ratio
+                        result['paid'] += line_paid
 
             except Exception as e:
-                _logger.warning(f"Error parsing analytic_distribution for invoice line {line.id}: {e}")
+                _logger.warning(f"Error parsing analytic_distribution for line {line.id}: {e}")
                 continue
 
         return result
@@ -334,10 +314,8 @@ class ProjectAnalytics(models.Model):
         Get vendor bills and refunds via analytic_distribution in account.move.line.
         This is the Odoo v18 way to link bills to projects.
 
-        IMPORTANT: 
-        - We calculate project portion based on bill LINE amounts (NET/NETTO only)
-        - Uses price_subtotal (without tax) for consistency
-        - Different lines may go to different projects
+        IMPORTANT: We must calculate the project portion based on bill LINE amounts,
+        not full bill amounts, because different lines may go to different projects.
 
         Handles both:
         - in_invoice: Vendor bills (positive cost)
@@ -346,6 +324,7 @@ class ProjectAnalytics(models.Model):
         result = {'total': 0.0}
 
         # Find all posted vendor bill/refund lines with this analytic account
+        # Filter by account_type to ensure we only get expense/payable lines
         bill_lines = self.env['account.move.line'].search([
             ('analytic_distribution', '!=', False),
             ('parent_state', '=', 'posted'),
@@ -354,18 +333,12 @@ class ProjectAnalytics(models.Model):
             ('account_id.account_type', '=', 'expense')
         ])
 
-        # Prefetch for performance
-        bill_lines.mapped('move_id.move_type')
-        bill_lines.mapped('move_id.reversed_entry_id')
-
         for line in bill_lines:
             if not line.analytic_distribution:
                 continue
 
-            # Skip FULL reversals (complete cancellation)
-            # Only check reversed_entry_id (the field that always exists)
-            if line.move_id.reversed_entry_id:
-                # This is a reversal entry - skip it
+            # Skip reversal entries (Storno) - they cancel out the original entry
+            if line.move_id.reversed_entry_id or line.move_id.reversal_move_id:
                 continue
 
             # Parse the analytic_distribution JSON
@@ -379,11 +352,12 @@ class ProjectAnalytics(models.Model):
                     # Get the percentage allocated to this project for THIS LINE
                     percentage = distribution.get(str(analytic_account.id), 0.0) / 100.0
 
+                    # Get the bill to check type
                     bill = line.move_id
 
                     # Calculate this line's contribution to the project
-                    # Use price_subtotal (NET amount without taxes)
-                    line_amount = line.price_subtotal * percentage
+                    # Use price_total (includes taxes) to match bill.amount_total
+                    line_amount = line.price_total * percentage
 
                     # Vendor refunds (in_refund) reduce costs, so subtract them
                     if bill.move_type == 'in_refund':
@@ -397,40 +371,12 @@ class ProjectAnalytics(models.Model):
 
         return result
 
-    def _get_skonto_accounts(self):
-        """
-        Get configurable Skonto account codes from system parameters.
-        Falls back to German chart of accounts defaults if not configured.
-        
-        Returns:
-            dict: {'customer': [list of codes], 'vendor': [list of codes]}
-        """
-        ICP = self.env['ir.config_parameter'].sudo()
-        
-        customer_accounts = ICP.get_param(
-            'project_analytics.customer_skonto_accounts',
-            '7300,7301,7302,7303,2130'  # Default for German SKR03/SKR04
-        ).split(',')
-        
-        vendor_accounts = ICP.get_param(
-            'project_analytics.vendor_skonto_accounts',
-            '4730,4731,4732,4733,2670'  # Default for German SKR03/SKR04
-        ).split(',')
-        
-        return {
-            'customer': [acc.strip() for acc in customer_accounts if acc.strip()],
-            'vendor': [acc.strip() for acc in vendor_accounts if acc.strip()]
-        }
-
     def _get_skonto_from_analytic(self, analytic_account):
         """
         Get Skonto (cash discounts) by querying analytic lines from discount accounts.
 
         This is a simpler and more reliable approach than analyzing reconciliation.
         Skonto entries are typically posted to specific accounts with analytic distribution.
-
-        IMPORTANT: Only count Skonto that is NOT already reflected in invoice/bill amounts.
-        Skip Skonto entries that belong to invoices/bills (already in amount_residual).
 
         Customer Skonto (Gewährte Skonti):
         - Accounts 7300-7303 (expense - reduces profit)
@@ -445,17 +391,10 @@ class ProjectAnalytics(models.Model):
         """
         result = {'customer_skonto': 0.0, 'vendor_skonto': 0.0}
 
-        # Get configurable account codes
-        skonto_accounts = self._get_skonto_accounts()
-
         # Get all analytic lines for this account
         analytic_lines = self.env['account.analytic.line'].search([
             ('account_id', '=', analytic_account.id)
         ])
-
-        # Prefetch for performance
-        analytic_lines.mapped('move_line_id.account_id.code')
-        analytic_lines.mapped('move_line_id.move_id.move_type')
 
         for line in analytic_lines:
             if not line.move_line_id or not line.move_line_id.account_id:
@@ -465,28 +404,15 @@ class ProjectAnalytics(models.Model):
             if not account_code:
                 continue
 
-            # Skip Skonto that belongs to invoices/bills
-            # (already reflected in their amount_residual/payment calculations)
-            if line.move_line_id.move_id:
-                move = line.move_line_id.move_id
-                if move.move_type in ['out_invoice', 'out_refund', 'in_invoice', 'in_refund']:
-                    # This Skonto is part of an invoice/bill - skip it
-                    # (it's already counted in the payment/residual amount)
-                    continue
-
-            # Customer Skonto (Gewährte Skonti) - expense accounts + liability
+            # Customer Skonto (Gewährte Skonti) - expense accounts 7300-7303 + liability 2130
             # These reduce our revenue/profit (customer got discount)
-            for customer_acc in skonto_accounts['customer']:
-                if account_code.startswith(customer_acc):
-                    result['customer_skonto'] += abs(line.amount)
-                    break
+            if account_code.startswith(('7300', '7301', '7302', '7303', '2130')):
+                result['customer_skonto'] += abs(line.amount)
 
-            # Vendor Skonto (Erhaltene Skonti) - income accounts + asset
+            # Vendor Skonto (Erhaltene Skonti) - income accounts 4730-4733 + asset 2670
             # These increase our profit (we got discount from vendor)
-            for vendor_acc in skonto_accounts['vendor']:
-                if account_code.startswith(vendor_acc):
-                    result['vendor_skonto'] += abs(line.amount)
-                    break
+            elif account_code.startswith(('4730', '4731', '4732', '4733', '2670')):
+                result['vendor_skonto'] += abs(line.amount)
 
         return result
 
@@ -494,8 +420,6 @@ class ProjectAnalytics(models.Model):
         """
         Get timesheet hours and costs from account.analytic.line.
         Timesheets have is_timesheet=True.
-        
-        Returns NET amounts (timesheets don't have VAT).
         """
         result = {'hours': 0.0, 'costs': 0.0}
 
@@ -515,10 +439,8 @@ class ProjectAnalytics(models.Model):
         """
         Get other costs from analytic lines that are:
         - NOT timesheets (is_timesheet=False)
-        - NOT from vendor bills (no move_line_id with in_invoice/in_refund)
+        - NOT from vendor bills (no move_line_id with in_invoice)
         - Negative amounts (costs are negative in Odoo)
-        
-        Returns NET amounts.
         """
         other_costs = 0.0
 
@@ -529,19 +451,15 @@ class ProjectAnalytics(models.Model):
             ('is_timesheet', '=', False)
         ])
 
-        # Prefetch for performance
-        cost_lines.mapped('move_line_id.move_id.move_type')
-
         for line in cost_lines:
             # Check if this line is NOT from a vendor bill
             is_from_vendor_bill = False
-            if line.move_line_id and line.move_line_id.move_id:
+            if line.move_line_id:
                 move = line.move_line_id.move_id
-                if move.move_type in ['in_invoice', 'in_refund']:
+                if move and move.move_type == 'in_invoice':
                     is_from_vendor_bill = True
 
             # Only count if it's not from a vendor bill
-            # (vendor bills are counted separately in vendor_bills_total)
             if not is_from_vendor_bill:
                 other_costs += abs(line.amount)
 
@@ -549,19 +467,43 @@ class ProjectAnalytics(models.Model):
 
     def _calculate_costs_with_tax(self, analytic_account, labor_costs, other_costs):
         """
-        DEPRECATED: This method is kept for backwards compatibility only.
-        
-        All calculations now use NET amounts consistently.
-        This method simply returns the NET costs without adding tax.
-        
-        Original purpose was to calculate total costs with tax included,
-        but this led to inconsistencies with revenue calculations.
-        
-        Returns:
-            float: Same as total_costs_net (labor_costs + other_costs)
+        Calculate total costs with tax included.
+        In German accounting, we need to add VAT to costs.
+
+        IMPORTANT: account.analytic.line.amount is typically the NET amount (without tax).
+        We need to add the tax from the related move_line_id to get the total with tax.
+
+        Note: We only add tax for lines that have a move_line_id (journal entries).
+        Labor costs from timesheets typically don't have taxes at this level.
         """
-        # Return NET costs - no tax calculation needed
-        return labor_costs + other_costs
+        total_costs_with_tax = labor_costs + other_costs
+
+        # Get all cost lines that have journal entry references (these might have taxes)
+        cost_lines = self.env['account.analytic.line'].search([
+            ('account_id', '=', analytic_account.id),
+            ('amount', '<', 0),
+            ('move_line_id', '!=', False)  # Only lines with journal entries
+        ])
+
+        for line in cost_lines:
+            # Skip if already counted in vendor_bills_total (to avoid double counting)
+            if line.move_line_id and line.move_line_id.move_id:
+                move = line.move_line_id.move_id
+                if move.move_type in ['in_invoice', 'in_refund']:
+                    # This is from a vendor bill, tax already included in vendor_bills_total
+                    continue
+
+            # Add tax for non-vendor-bill expense lines
+            if line.move_line_id and line.move_line_id.tax_ids:
+                line_amount = abs(line.amount)
+                for tax in line.move_line_id.tax_ids:
+                    if tax.amount_type == 'percent':
+                        tax_amount = line_amount * (tax.amount / 100.0)
+                        total_costs_with_tax += tax_amount
+                    elif tax.amount_type == 'fixed':
+                        total_costs_with_tax += tax.amount
+
+        return total_costs_with_tax
 
     def action_view_account_analytic_line(self):
         """
@@ -659,7 +601,7 @@ class ProjectAnalytics(models.Model):
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
-                'title': _('Financial Data Refreshed'),
+                'title': 'Financial Data Refreshed',
                 'message': f'Financial data has been recalculated for {len(self)} project(s).',
                 'type': 'success',
                 'sticky': False,

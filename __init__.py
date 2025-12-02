@@ -51,15 +51,6 @@ def uninstall_hook(env):
         'profit_loss_net',
         'negative_difference_net',
 
-        # Deprecated/Legacy fields
-        'customer_invoiced_amount',
-        'customer_paid_amount',
-        'customer_outstanding_amount',
-        'vendor_bills_total',
-        'total_costs_with_tax',
-        'profit_loss',
-        'negative_difference',
-
         # Basic info fields
         'client_name',
         'head_of_project',

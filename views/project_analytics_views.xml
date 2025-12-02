@@ -79,22 +79,6 @@
                        decoration-danger="profit_loss_net &lt; 0" width="140px"/>
                 <field name="negative_difference_net" sum="Total Losses (Net)" optional="hide"
                        widget="monetary" width="140px"/>
-
-                <!-- Legacy/Deprecated fields (hidden by default) -->
-                <field name="customer_invoiced_amount" sum="[DEPRECATED] Invoiced" optional="hide"
-                       widget="monetary" class="text-muted" decoration-muted="customer_invoiced_amount or not customer_invoiced_amount" width="140px"/>
-                <field name="customer_paid_amount" sum="[DEPRECATED] Paid" optional="hide"
-                       widget="monetary" class="text-muted" decoration-muted="customer_paid_amount or not customer_paid_amount" width="140px"/>
-                <field name="customer_outstanding_amount" sum="[DEPRECATED] Outstanding" optional="hide"
-                       widget="monetary" class="text-muted" decoration-muted="customer_outstanding_amount or not customer_outstanding_amount" width="140px"/>
-                <field name="vendor_bills_total" sum="[DEPRECATED] Vendor Bills" optional="hide"
-                       widget="monetary" class="text-muted" decoration-muted="vendor_bills_total or not vendor_bills_total" width="140px"/>
-                <field name="total_costs_with_tax" sum="[DEPRECATED] Total Costs" optional="hide"
-                       widget="monetary" class="text-muted" decoration-muted="total_costs_with_tax or not total_costs_with_tax" width="140px"/>
-                <field name="profit_loss" sum="[DEPRECATED] Profit/Loss" optional="hide"
-                       widget="monetary" class="text-muted" decoration-muted="profit_loss or not profit_loss" width="140px"/>
-                <field name="negative_difference" sum="[DEPRECATED] Losses" optional="hide"
-                       widget="monetary" class="text-muted" decoration-muted="negative_difference or not negative_difference" width="140px"/>
             </list>
         </field>
     </record>
@@ -137,14 +121,6 @@
                 <!-- Profitability Measures - NET -->
                 <field name="profit_loss_net" type="measure"/>
                 <field name="negative_difference_net" type="measure"/>
-
-                <!-- Legacy measures (kept for compatibility) -->
-                <field name="customer_invoiced_amount" type="measure"/>
-                <field name="customer_paid_amount" type="measure"/>
-                <field name="customer_outstanding_amount" type="measure"/>
-                <field name="vendor_bills_total" type="measure"/>
-                <field name="profit_loss" type="measure"/>
-                <field name="negative_difference" type="measure"/>
 
                 <!-- Dimension fields - available for grouping -->
                 <field name="name" type="row"/>

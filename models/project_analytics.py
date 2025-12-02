@@ -175,57 +175,6 @@ class ProjectAnalytics(models.Model):
         help="Total project losses as a positive number, NET basis (Verluste Netto). This shows the absolute value of negative profit/loss. If profit/loss is positive, this field is 0. Useful for tracking and reporting total losses."
     )
 
-    # Legacy/Deprecated fields (kept for backwards compatibility)
-    customer_invoiced_amount = fields.Float(
-        string='Total Invoiced Amount (Deprecated)',
-        compute='_compute_financial_data',
-        store=True,
-        aggregator='sum',
-        help="DEPRECATED: Use customer_invoiced_amount_net or customer_invoiced_amount_gross instead. Currently returns GROSS amount for backwards compatibility."
-    )
-    customer_paid_amount = fields.Float(
-        string='Total Paid Amount (Deprecated)',
-        compute='_compute_financial_data',
-        store=True,
-        aggregator='sum',
-        help="DEPRECATED: Use customer_paid_amount_net or customer_paid_amount_gross instead. Currently returns GROSS amount for backwards compatibility."
-    )
-    customer_outstanding_amount = fields.Float(
-        string='Outstanding Amount (Deprecated)',
-        compute='_compute_financial_data',
-        store=True,
-        aggregator='sum',
-        help="DEPRECATED: Use customer_outstanding_amount_net or customer_outstanding_amount_gross instead. Currently returns GROSS amount for backwards compatibility."
-    )
-    vendor_bills_total = fields.Float(
-        string='Vendor Bills Total (Deprecated)',
-        compute='_compute_financial_data',
-        store=True,
-        aggregator='sum',
-        help="DEPRECATED: Use vendor_bills_total_net or vendor_bills_total_gross instead. Currently returns GROSS amount for backwards compatibility."
-    )
-    total_costs_with_tax = fields.Float(
-        string='Total Costs (with tax) (Deprecated)',
-        compute='_compute_financial_data',
-        store=True,
-        aggregator='sum',
-        help="DEPRECATED: This field is no longer calculated. Use total_costs_net for accurate NET costs or add vendor_bills_total_gross for total project costs including vendor bills."
-    )
-    profit_loss = fields.Float(
-        string='Profit/Loss Amount (Deprecated)',
-        compute='_compute_financial_data',
-        store=True,
-        aggregator='sum',
-        help="DEPRECATED: Use profit_loss_net instead. Currently returns NET-based profit/loss for backwards compatibility."
-    )
-    negative_difference = fields.Float(
-        string='Negative Differences (Deprecated)',
-        compute='_compute_financial_data',
-        store=True,
-        aggregator='sum',
-        help="DEPRECATED: Use negative_difference_net instead. Currently returns NET-based losses for backwards compatibility."
-    )
-
     @api.depends('partner_id', 'user_id')
     def _compute_financial_data(self):
         """
@@ -313,15 +262,6 @@ class ProjectAnalytics(models.Model):
                 project.total_costs_net = 0.0
                 project.profit_loss_net = 0.0
                 project.negative_difference_net = 0.0
-
-                # Legacy fields
-                project.customer_invoiced_amount = 0.0
-                project.customer_paid_amount = 0.0
-                project.customer_outstanding_amount = 0.0
-                project.vendor_bills_total = 0.0
-                project.total_costs_with_tax = 0.0
-                project.profit_loss = 0.0
-                project.negative_difference = 0.0
                 continue
 
             # 1. Calculate Customer Invoices (Revenue) - Both NET and GROSS
@@ -388,15 +328,6 @@ class ProjectAnalytics(models.Model):
 
             project.profit_loss_net = profit_loss_net
             project.negative_difference_net = negative_difference_net
-
-            # Legacy/Deprecated fields (for backwards compatibility - use GROSS amounts)
-            project.customer_invoiced_amount = customer_invoiced_amount_gross
-            project.customer_paid_amount = customer_paid_amount_gross
-            project.customer_outstanding_amount = customer_outstanding_amount_gross
-            project.vendor_bills_total = vendor_bills_total_gross
-            project.total_costs_with_tax = 0.0  # Deprecated - no longer calculated
-            project.profit_loss = profit_loss_net  # Use NET for consistency
-            project.negative_difference = negative_difference_net
 
     def _get_customer_invoices_from_analytic(self, analytic_account):
         """

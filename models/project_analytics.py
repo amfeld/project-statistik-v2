@@ -363,6 +363,28 @@ class ProjectAnalytics(models.Model):
         # DEBUG: Log what we're searching for
         _logger.info(f"Searching for invoice lines for analytic account: {analytic_account.id} ({analytic_account.name})")
 
+        # DIAGNOSTIC: Check each filter condition separately to find the issue
+        all_move_lines = self.env['account.move.line'].search([])
+        _logger.info(f"DIAGNOSTIC: Total move lines in database: {len(all_move_lines)}")
+
+        customer_moves = self.env['account.move.line'].search([
+            ('move_id.move_type', 'in', ['out_invoice', 'out_refund'])
+        ])
+        _logger.info(f"DIAGNOSTIC: Customer invoice lines (any state): {len(customer_moves)}")
+
+        posted_customer_moves = self.env['account.move.line'].search([
+            ('parent_state', '=', 'posted'),
+            ('move_id.move_type', 'in', ['out_invoice', 'out_refund'])
+        ])
+        _logger.info(f"DIAGNOSTIC: Posted customer invoice lines: {len(posted_customer_moves)}")
+
+        with_analytic = self.env['account.move.line'].search([
+            ('analytic_distribution', '!=', False),
+            ('parent_state', '=', 'posted'),
+            ('move_id.move_type', 'in', ['out_invoice', 'out_refund'])
+        ])
+        _logger.info(f"DIAGNOSTIC: Posted customer lines WITH analytic_distribution: {len(with_analytic)}")
+
         # Find all posted customer invoice/credit note lines with this analytic account
         # RELAXED FILTER: Removed account_type filter to catch all invoice lines
         # German accounting (SKR03/SKR04) might use different account types
@@ -462,6 +484,25 @@ class ProjectAnalytics(models.Model):
 
         # DEBUG: Log what we're searching for
         _logger.info(f"Searching for vendor bill lines for analytic account: {analytic_account.id} ({analytic_account.name})")
+
+        # DIAGNOSTIC: Check each filter condition separately to find the issue
+        vendor_moves = self.env['account.move.line'].search([
+            ('move_id.move_type', 'in', ['in_invoice', 'in_refund'])
+        ])
+        _logger.info(f"DIAGNOSTIC: Vendor bill lines (any state): {len(vendor_moves)}")
+
+        posted_vendor_moves = self.env['account.move.line'].search([
+            ('parent_state', '=', 'posted'),
+            ('move_id.move_type', 'in', ['in_invoice', 'in_refund'])
+        ])
+        _logger.info(f"DIAGNOSTIC: Posted vendor bill lines: {len(posted_vendor_moves)}")
+
+        vendor_with_analytic = self.env['account.move.line'].search([
+            ('analytic_distribution', '!=', False),
+            ('parent_state', '=', 'posted'),
+            ('move_id.move_type', 'in', ['in_invoice', 'in_refund'])
+        ])
+        _logger.info(f"DIAGNOSTIC: Posted vendor lines WITH analytic_distribution: {len(vendor_with_analytic)}")
 
         # Find all posted vendor bill/refund lines with this analytic account
         # RELAXED FILTER: Removed account_type filter to catch all bill lines

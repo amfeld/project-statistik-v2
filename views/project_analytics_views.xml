@@ -5,9 +5,9 @@
         <field name="name">project.project.list.account.analytics</field>
         <field name="model">project.project</field>
         <field name="arch" type="xml">
-            <list string="Projektstatistik" create="false" edit="false" delete="false">
+            <list string="Project Statistics" create="false" edit="false" delete="false">
                 <header>
-                    <button name="action_refresh_financial_data" type="object" string="Finanzdaten aktualisieren" class="btn-primary"/>
+                    <button name="action_refresh_financial_data" type="object" string="Refresh Financial Data" class="btn-primary"/>
                 </header>
 
                 <!-- Basic Information -->
@@ -22,72 +22,72 @@
                        optional="show"/>
 
                 <!-- Customer Invoice Fields - NET (primary) -->
-                <field name="customer_invoiced_amount_net" sum="Gesamt in Rechnung gestellt (Netto)" optional="show"
+                <field name="customer_invoiced_amount_net" sum="Total Invoiced (Net)" optional="show"
                        widget="monetary" decoration-bf="1"/>
-                <field name="customer_paid_amount_net" sum="Gesamt bezahlt (Netto)" optional="show"
+                <field name="customer_paid_amount_net" sum="Total Paid (Net)" optional="show"
                        widget="monetary"/>
-                <field name="customer_outstanding_amount_net" sum="Gesamt ausstehend (Netto)" optional="show"
+                <field name="customer_outstanding_amount_net" sum="Total Outstanding (Net)" optional="show"
                        widget="monetary" decoration-danger="customer_outstanding_amount_net != 0"/>
 
                 <!-- Customer Invoice Fields - GROSS (dunkelgrau) -->
-                <field name="customer_invoiced_amount_gross" sum="Gesamt in Rechnung gestellt (Brutto)" optional="hide"
+                <field name="customer_invoiced_amount_gross" sum="Total Invoiced (Gross)" optional="hide"
                        widget="monetary" class="text-muted" decoration-muted="customer_invoiced_amount_gross or not customer_invoiced_amount_gross"/>
-                <field name="customer_paid_amount_gross" sum="Gesamt bezahlt (Brutto)" optional="hide"
+                <field name="customer_paid_amount_gross" sum="Total Paid (Gross)" optional="hide"
                        widget="monetary" class="text-muted" decoration-muted="customer_paid_amount_gross or not customer_paid_amount_gross"/>
-                <field name="customer_outstanding_amount_gross" sum="Gesamt ausstehend (Brutto)" optional="hide"
+                <field name="customer_outstanding_amount_gross" sum="Total Outstanding (Gross)" optional="hide"
                        widget="monetary" class="text-muted" decoration-muted="customer_outstanding_amount_gross or not customer_outstanding_amount_gross"/>
 
                 <!-- Skonto -->
-                <field name="customer_skonto_taken" sum="Gesamt gewährte Skonti" optional="hide"
+                <field name="customer_skonto_taken" sum="Total Cash Discounts Granted" optional="hide"
                        widget="monetary"/>
 
                 <!-- Vendor Bills - NET (primary) -->
-                <field name="vendor_bills_total_net" sum="Gesamt Lieferantenrechnungen (Netto)" optional="show"
+                <field name="vendor_bills_total_net" sum="Total Vendor Bills (Net)" optional="show"
                        widget="monetary" decoration-bf="1"/>
 
                 <!-- Vendor Bills - GROSS (dunkelgrau) -->
-                <field name="vendor_bills_total_gross" sum="Gesamt Lieferantenrechnungen (Brutto)" optional="hide"
+                <field name="vendor_bills_total_gross" sum="Total Vendor Bills (Gross)" optional="hide"
                        widget="monetary" class="text-muted" decoration-muted="vendor_bills_total_gross or not vendor_bills_total_gross"/>
 
-                <field name="vendor_skonto_received" sum="Gesamt erhaltene Skonti" optional="hide"
+                <field name="vendor_skonto_received" sum="Total Cash Discounts Received" optional="hide"
                        widget="monetary"/>
 
                 <!-- Labor -->
-                <field name="total_hours_booked" sum="Gesamt Stunden" optional="show"
+                <field name="total_hours_booked" sum="Total Hours" optional="show"
                        widget="float_time"/>
-                <field name="labor_costs" sum="Gesamtpersonalkosten" optional="show"
+                <field name="labor_costs" sum="Total Labor Costs" optional="show"
                        widget="monetary"/>
 
                 <!-- Other Costs -->
-                <field name="other_costs_net" sum="Sonstige Kosten (Netto)" optional="hide"
+                <field name="other_costs_net" sum="Other Costs (Net)" optional="hide"
                        widget="monetary"/>
 
                 <!-- Total Cost Fields - NET -->
-                <field name="total_costs_net" sum="Gesamtkosten Netto" optional="show"
+                <field name="total_costs_net" sum="Total Costs Net" optional="show"
                        widget="monetary" decoration-bf="1"/>
 
                 <!-- Profitability - NET -->
-                <field name="profit_loss_net" sum="Gesamt Gewinn/Verlust (Netto)" optional="show"
+                <field name="profit_loss_net" sum="Total Profit/Loss (Net)" optional="show"
                        widget="monetary" decoration-bf="1"
                        decoration-success="profit_loss_net &gt; 0"
                        decoration-danger="profit_loss_net &lt; 0"/>
-                <field name="negative_difference_net" sum="Gesamtverluste (Netto)" optional="hide"
+                <field name="negative_difference_net" sum="Total Losses (Net)" optional="hide"
                        widget="monetary"/>
 
                 <!-- Legacy/Deprecated fields (hidden by default) -->
-                <field name="customer_invoiced_amount" sum="[VERALTET] In Rechnung gestellt" optional="hide"
+                <field name="customer_invoiced_amount" sum="[DEPRECATED] Invoiced" optional="hide"
                        widget="monetary" class="text-muted" decoration-muted="customer_invoiced_amount or not customer_invoiced_amount"/>
-                <field name="customer_paid_amount" sum="[VERALTET] Bezahlt" optional="hide"
+                <field name="customer_paid_amount" sum="[DEPRECATED] Paid" optional="hide"
                        widget="monetary" class="text-muted" decoration-muted="customer_paid_amount or not customer_paid_amount"/>
-                <field name="customer_outstanding_amount" sum="[VERALTET] Ausstehend" optional="hide"
+                <field name="customer_outstanding_amount" sum="[DEPRECATED] Outstanding" optional="hide"
                        widget="monetary" class="text-muted" decoration-muted="customer_outstanding_amount or not customer_outstanding_amount"/>
-                <field name="vendor_bills_total" sum="[VERALTET] Lieferantenrechnungen" optional="hide"
+                <field name="vendor_bills_total" sum="[DEPRECATED] Vendor Bills" optional="hide"
                        widget="monetary" class="text-muted" decoration-muted="vendor_bills_total or not vendor_bills_total"/>
-                <field name="total_costs_with_tax" sum="[VERALTET] Gesamtkosten" optional="hide"
+                <field name="total_costs_with_tax" sum="[DEPRECATED] Total Costs" optional="hide"
                        widget="monetary" class="text-muted" decoration-muted="total_costs_with_tax or not total_costs_with_tax"/>
-                <field name="profit_loss" sum="[VERALTET] Gewinn/Verlust" optional="hide"
+                <field name="profit_loss" sum="[DEPRECATED] Profit/Loss" optional="hide"
                        widget="monetary" class="text-muted" decoration-muted="profit_loss or not profit_loss"/>
-                <field name="negative_difference" sum="[VERALTET] Verluste" optional="hide"
+                <field name="negative_difference" sum="[DEPRECATED] Losses" optional="hide"
                        widget="monetary" class="text-muted" decoration-muted="negative_difference or not negative_difference"/>
             </list>
         </field>
@@ -97,7 +97,7 @@
         <field name="name">project.project.pivot.account.analytics</field>
         <field name="model">project.project</field>
         <field name="arch" type="xml">
-            <pivot string="Projektstatistik Pivot">
+            <pivot string="Project Statistics Pivot">
                 <!-- Customer Invoice Measures - NET (primary) -->
                 <field name="customer_invoiced_amount_net" type="measure"/>
                 <field name="customer_paid_amount_net" type="measure"/>
@@ -158,7 +158,7 @@
         <field name="name">project.project.graph.account.analytics</field>
         <field name="model">project.project</field>
         <field name="arch" type="xml">
-            <graph string="Projektstatistik Diagramm" type="bar" sample="1">
+            <graph string="Project Statistics Chart" type="bar" sample="1">
                 <field name="name"/>
                 <field name="customer_invoiced_amount_net" type="measure"/>
                 <field name="vendor_bills_total_net" type="measure"/>
@@ -173,27 +173,27 @@
         <field name="name">project.project.form.account.analytics</field>
         <field name="model">project.project</field>
         <field name="arch" type="xml">
-            <form string="Projektdetails" create="false" edit="false" delete="false">
+            <form string="Project Details" create="false" edit="false" delete="false">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_account_analytic_line"
                                 type="object"
                                 class="oe_stat_button"
                                 icon="fa-pencil-square-o"
-                                string="Analytische Buchungen"
-                                help="Zeigt alle Buchungszeilen die diesem Projekt zugeordnet sind"/>
+                                string="Analytic Entries"
+                                help="Show all analytic entries assigned to this project"/>
                         <button name="action_open_standard_project_form"
                                 type="object"
                                 class="oe_stat_button"
                                 icon="fa-tasks"
-                                string="Projektdetails"
-                                help="Öffnet die Standard-Projektansicht"/>
+                                string="Project Details"
+                                help="Open the standard project view"/>
                         <button name="action_refresh_financial_data"
                                 type="object"
                                 class="oe_stat_button"
                                 icon="fa-refresh"
-                                string="Daten aktualisieren"
-                                help="Berechnet alle Finanzdaten neu"/>
+                                string="Refresh Data"
+                                help="Recalculate all financial data"/>
                     </div>
 
                     <div class="oe_title">
@@ -204,27 +204,27 @@
 
                     <!-- Data Availability Warning -->
                     <div class="alert alert-danger" role="alert" invisible="data_availability_status == 'available'">
-                        <strong>⚠️ Keine Finanzdaten verfügbar</strong><br/>
-                        Diesem Projekt ist kein analytisches Konto zugeordnet. Alle Finanzfelder zeigen 0,00 €.<br/><br/>
-                        <strong>Um Finanzdaten zu aktivieren:</strong>
+                        <strong>⚠️ No Financial Data Available</strong><br/>
+                        This project has no analytic account assigned. All financial fields show 0.00 €.<br/><br/>
+                        <strong>To activate financial data:</strong>
                         <ol>
-                            <li>Aktivieren Sie "Analytische Buchhaltung" in den Buchhaltungseinstellungen</li>
-                            <li>Weisen Sie diesem Projekt ein analytisches Konto zu (Plan: Projekte)</li>
-                            <li>Stellen Sie sicher, dass Rechnungszeilen "Analytische Verteilung" gesetzt haben</li>
+                            <li>Enable "Analytic Accounting" in accounting settings</li>
+                            <li>Assign an analytic account to this project (Plan: Projects)</li>
+                            <li>Ensure invoice lines have "Analytic Distribution" set</li>
                         </ol>
                     </div>
                     <field name="data_availability_status" invisible="1"/>
                     <field name="has_analytic_account" invisible="1"/>
 
                     <group>
-                        <group name="project_info" string="Projektinformationen">
+                        <group name="project_info" string="Project Information">
                             <field name="client_name"/>
                             <field name="head_of_project"/>
                             <field name="partner_id"/>
                             <field name="user_id"/>
                             <field name="stage_id"/>
                         </group>
-                        <group name="dates" string="Zeiträume">
+                        <group name="dates" string="Time Periods">
                             <field name="date_start"/>
                             <field name="date"/>
                             <field name="create_date"/>
@@ -232,8 +232,8 @@
                     </group>
 
                     <!-- Summary section with NET/GROSS comparison -->
-                    <group string="Finanzzusammenfassung">
-                        <group string="NETTO-Beträge (Hauptansicht)">
+                    <group string="Financial Summary">
+                        <group string="NET Amounts (Main View)">
                             <field name="data_availability_status" widget="badge"
                                    decoration-success="data_availability_status == 'available'"
                                    decoration-danger="data_availability_status == 'no_analytic_account'"/>
@@ -248,27 +248,27 @@
                                    decoration-danger="profit_loss_net &lt; 0"
                                    decoration-bf="1"/>
                         </group>
-                        <group string="BRUTTO-Beträge (mit MwSt.)">
+                        <group string="GROSS Amounts (with VAT)">
                             <field name="customer_invoiced_amount_gross" widget="monetary"
                                    decoration-muted="1"/>
                             <field name="vendor_bills_total_gross" widget="monetary"
                                    decoration-muted="1"/>
-                            <label for="total_hours_booked" string="Arbeitsstunden"/>
+                            <label for="total_hours_booked" string="Work Hours"/>
                             <field name="total_hours_booked" widget="float_time" nolabel="1"/>
                         </group>
                     </group>
 
                     <notebook>
-                        <page string="Kundenrechnungen" name="customer_invoices">
+                        <page string="Customer Invoices" name="customer_invoices">
                             <group>
-                                <group string="NETTO-Beträge (ohne MwSt.)">
+                                <group string="NET Amounts (without VAT)">
                                     <field name="customer_invoiced_amount_net" widget="monetary"
                                            decoration-bf="1"/>
                                     <field name="customer_paid_amount_net" widget="monetary"/>
                                     <field name="customer_outstanding_amount_net" widget="monetary"
                                            decoration-danger="customer_outstanding_amount_net &gt; 0"/>
                                 </group>
-                                <group string="BRUTTO-Beträge (mit MwSt.)">
+                                <group string="GROSS Amounts (with VAT)">
                                     <field name="customer_invoiced_amount_gross" widget="monetary"
                                            decoration-muted="1"/>
                                     <field name="customer_paid_amount_gross" widget="monetary"
@@ -279,72 +279,72 @@
                                 </group>
                             </group>
                             <group>
-                                <group string="Skonti &amp; Rabatte">
+                                <group string="Cash Discounts &amp; Rebates">
                                     <field name="customer_skonto_taken" widget="monetary"/>
                                 </group>
                             </group>
                             <div class="alert alert-info" role="alert">
-                                <strong>Hinweis:</strong> Die NETTO-Beträge sind die Hauptbeträge für die Gewinnberechnung.
-                                BRUTTO-Beträge (dunkelgrau) zeigen die Gesamtbeträge inkl. MwSt. für Cashflow-Analysen.
-                                Bezahlte Beträge werden proportional über alle Rechnungszeilen verteilt.
+                                <strong>Note:</strong> NET amounts are the main amounts for profit calculation.
+                                GROSS amounts (dark gray) show total amounts incl. VAT for cash flow analysis.
+                                Paid amounts are distributed proportionally across all invoice lines.
                             </div>
                         </page>
 
-                        <page string="Lieferantenrechnungen" name="vendor_bills">
+                        <page string="Vendor Bills" name="vendor_bills">
                             <group>
-                                <group string="NETTO-Beträge (ohne MwSt.)">
+                                <group string="NET Amounts (without VAT)">
                                     <field name="vendor_bills_total_net" widget="monetary"
                                            decoration-bf="1"/>
                                 </group>
-                                <group string="BRUTTO-Beträge (mit MwSt.)">
+                                <group string="GROSS Amounts (with VAT)">
                                     <field name="vendor_bills_total_gross" widget="monetary"
                                            decoration-muted="1"/>
                                 </group>
                             </group>
                             <group>
-                                <group string="Skonti &amp; Rabatte">
+                                <group string="Cash Discounts &amp; Rebates">
                                     <field name="vendor_skonto_received" widget="monetary"/>
                                 </group>
                             </group>
                             <div class="alert alert-info" role="alert">
-                                <strong>Hinweis:</strong> Die NETTO-Beträge sind die Hauptbeträge für die Gewinnberechnung.
-                                BRUTTO-Beträge (dunkelgrau) zeigen die Gesamtbeträge inkl. MwSt.
-                                Erhaltene Skonti reduzieren die effektiven Kosten.
+                                <strong>Note:</strong> NET amounts are the main amounts for profit calculation.
+                                GROSS amounts (dark gray) show total amounts incl. VAT.
+                                Received cash discounts reduce the effective costs.
                             </div>
                         </page>
 
-                        <page string="Kosten" name="costs">
+                        <page string="Costs" name="costs">
                             <group>
-                                <group string="Interne Kosten (NETTO)">
+                                <group string="Internal Costs (NET)">
                                     <field name="labor_costs" widget="monetary"
                                            decoration-bf="1"/>
                                     <field name="other_costs_net" widget="monetary"/>
                                     <field name="total_costs_net" widget="monetary"
                                            decoration-bf="1"/>
                                 </group>
-                                <group string="Personalkosten">
+                                <group string="Labor Costs">
                                     <field name="total_hours_booked" widget="float_time"/>
-                                    <label for="labor_costs" string="Personalkosten"/>
+                                    <label for="labor_costs" string="Labor Costs"/>
                                     <div class="text-muted">
                                         <field name="labor_costs" widget="monetary" nolabel="1" readonly="1"/>
                                     </div>
                                 </group>
                             </group>
                             <div class="alert alert-info" role="alert">
-                                <strong>Kostenaufschlüsselung (NETTO):</strong>
+                                <strong>Cost Breakdown (NET):</strong>
                                 <ul>
-                                    <li><strong>Lieferantenrechnungen:</strong> Externe Kosten (siehe Tab "Lieferantenrechnungen")</li>
-                                    <li><strong>Personalkosten:</strong> Zeiterfassung × Stundensatz (NETTO)</li>
-                                    <li><strong>Sonstige Kosten:</strong> Andere interne Buchungen (NETTO)</li>
-                                    <li><strong>Gesamtkosten Netto:</strong> Personalkosten + Sonstige Kosten (ohne Lieferantenrechnungen)</li>
+                                    <li><strong>Vendor Bills:</strong> External costs (see "Vendor Bills" tab)</li>
+                                    <li><strong>Labor Costs:</strong> Time tracking × hourly rate (NET)</li>
+                                    <li><strong>Other Costs:</strong> Other internal entries (NET)</li>
+                                    <li><strong>Total Costs Net:</strong> Labor costs + Other costs (excluding vendor bills)</li>
                                 </ul>
-                                <p><em>Hinweis: Alle internen Kosten sind NETTO-Beträge (ohne MwSt.)</em></p>
+                                <p><em>Note: All internal costs are NET amounts (without VAT)</em></p>
                             </div>
                         </page>
 
-                        <page string="Rentabilität" name="profitability">
+                        <page string="Profitability" name="profitability">
                             <group>
-                                <group string="Gewinn/Verlust (NETTO-Basis)">
+                                <group string="Profit/Loss (NET Basis)">
                                     <field name="profit_loss_net" widget="monetary"
                                            decoration-success="profit_loss_net &gt; 0"
                                            decoration-danger="profit_loss_net &lt; 0"
@@ -353,24 +353,24 @@
                                 </group>
                             </group>
                             <div class="alert alert-success" role="alert">
-                                <strong>Berechnungsformel (NETTO-Basis):</strong><br/>
+                                <strong>Calculation Formula (NET Basis):</strong><br/>
                                 <code>
-                                    Gewinn/Verlust (Netto) =
-                                    (Kundenrechnungen Netto - Gewährte Skonti) -
-                                    (Lieferantenrechnungen Netto - Erhaltene Skonti + Interne Kosten Netto)
+                                    Profit/Loss (Net) =
+                                    (Customer Invoices Net - Cash Discounts Granted) -
+                                    (Vendor Bills Net - Cash Discounts Received + Internal Costs Net)
                                 </code>
                                 <br/><br/>
-                                <strong>Warum NETTO-Basis?</strong>
+                                <strong>Why NET Basis?</strong>
                                 <ul>
-                                    <li>✅ MwSt. ist ein Durchlaufposten (wir ziehen ein und zahlen ab)</li>
-                                    <li>✅ NETTO-zu-NETTO Vergleich ist buchhalterisch korrekt</li>
-                                    <li>✅ Zeigt die echte Projektrentabilität ohne Steuerverzerrung</li>
+                                    <li>✅ VAT is a pass-through item (we collect and remit)</li>
+                                    <li>✅ NET-to-NET comparison is accounting-correct</li>
+                                    <li>✅ Shows true project profitability without tax distortion</li>
                                 </ul>
                                 <br/>
                                 <strong>Interpretation:</strong>
                                 <ul>
-                                    <li><strong>Positiver Wert:</strong> Projekt macht Gewinn ✓</li>
-                                    <li><strong>Negativer Wert:</strong> Projekt macht Verlust ✗</li>
+                                    <li><strong>Positive Value:</strong> Project is profitable ✓</li>
+                                    <li><strong>Negative Value:</strong> Project is loss-making ✗</li>
                                 </ul>
                             </div>
                         </page>
@@ -382,7 +382,7 @@
 
     <!-- Window action for project analytics -->
     <record id="action_project_analytics_report" model="ir.actions.act_window">
-        <field name="name">Projektstatistik</field>
+        <field name="name">Project Statistics</field>
         <field name="res_model">project.project</field>
         <field name="view_mode">list,pivot,graph,form</field>
         <field name="view_ids" eval="[
@@ -395,12 +395,12 @@
         <field name="domain">[]</field>
         <field name="context">{}</field>
         <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">Keine Projekte gefunden</p>
-            <p>Diese Ansicht zeigt alle Projekte für Analyse- und Berichtszwecke mit detaillierter Kunden- und Lieferantenverfolgung.</p>
-            <p><strong>NETTO vs. BRUTTO:</strong></p>
+            <p class="o_view_nocontent_smiling_face">No projects found</p>
+            <p>This view shows all projects for analysis and reporting purposes with detailed customer and vendor tracking.</p>
+            <p><strong>NET vs. GROSS:</strong></p>
             <ul>
-                <li><strong>NETTO-Beträge:</strong> Hauptbeträge für Gewinnberechnung (ohne MwSt.)</li>
-                <li><strong>BRUTTO-Beträge (dunkelgrau):</strong> Gesamtbeträge für Cashflow-Analyse (mit MwSt.)</li>
+                <li><strong>NET Amounts:</strong> Main amounts for profit calculation (without VAT)</li>
+                <li><strong>GROSS Amounts (dark gray):</strong> Total amounts for cash flow analysis (with VAT)</li>
             </ul>
         </field>
     </record>
@@ -416,8 +416,8 @@
                         type="object"
                         class="oe_stat_button"
                         icon="fa-line-chart"
-                        string="Finanzanalyse"
-                        help="Zeigt detaillierte Finanzanalyse mit NETTO/BRUTTO-Vergleich"
+                        string="Financial Analysis"
+                        help="Show detailed financial analysis with NET/GROSS comparison"
                         groups="project.group_project_user"/>
             </xpath>
         </field>
@@ -425,14 +425,14 @@
 
     <!-- Add menu item in Accounting or Project menu -->
     <menuitem id="menu_project_analytics_accounting"
-              name="Projektstatistik"
+              name="Project Statistics"
               parent="account.menu_finance_reports"
               action="action_project_analytics_report"
               sequence="50"
               groups="account.group_account_readonly"/>
 
     <menuitem id="menu_project_analytics_project"
-              name="Finanzanalyse"
+              name="Financial Analysis"
               parent="project.menu_project_report"
               action="action_project_analytics_report"
               sequence="10"

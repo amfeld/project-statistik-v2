@@ -166,12 +166,12 @@ msgstr "Negative Differenzen (Veraltet)"
 
 #. module: project_statistic
 #: model:ir.actions.act_window,name:project_statistic.action_project_analytics_report
-msgid "Project Statistic"
+msgid "Project Statistics"
 msgstr "Projektstatistik"
 
 #. module: project_statistic
 #: model:ir.ui.menu,name:project_statistic.menu_project_analytics_accounting
-msgid "Project Statistic"
+msgid "Project Statistics"
 msgstr "Projektstatistik"
 
 #. module: project_statistic
@@ -181,193 +181,453 @@ msgstr "Finanzanalyse"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
-msgid "Projektstatistik"
+msgid "Project Statistics"
 msgstr "Projektstatistik"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
-msgid "Finanzdaten aktualisieren"
+msgid "Refresh Financial Data"
 msgstr "Finanzdaten aktualisieren"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
-msgid "Gesamt in Rechnung gestellt (Netto)"
+msgid "Total Invoiced (Net)"
 msgstr "Gesamt in Rechnung gestellt (Netto)"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
-msgid "Gesamt bezahlt (Netto)"
+msgid "Total Paid (Net)"
 msgstr "Gesamt bezahlt (Netto)"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
-msgid "Gesamt ausstehend (Netto)"
+msgid "Total Outstanding (Net)"
 msgstr "Gesamt ausstehend (Netto)"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
-msgid "Gesamt in Rechnung gestellt (Brutto)"
+msgid "Total Invoiced (Gross)"
 msgstr "Gesamt in Rechnung gestellt (Brutto)"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
-msgid "Gesamt bezahlt (Brutto)"
+msgid "Total Paid (Gross)"
 msgstr "Gesamt bezahlt (Brutto)"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
-msgid "Gesamt ausstehend (Brutto)"
+msgid "Total Outstanding (Gross)"
 msgstr "Gesamt ausstehend (Brutto)"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
-msgid "Gesamt gewährte Skonti"
+msgid "Total Cash Discounts Granted"
 msgstr "Gesamt gewährte Skonti"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
-msgid "Gesamt Lieferantenrechnungen (Netto)"
+msgid "Total Vendor Bills (Net)"
 msgstr "Gesamt Lieferantenrechnungen (Netto)"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
-msgid "Gesamt Lieferantenrechnungen (Brutto)"
+msgid "Total Vendor Bills (Gross)"
 msgstr "Gesamt Lieferantenrechnungen (Brutto)"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
-msgid "Gesamt erhaltene Skonti"
+msgid "Total Cash Discounts Received"
 msgstr "Gesamt erhaltene Skonti"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
-msgid "Gesamt Stunden"
+msgid "Total Hours"
 msgstr "Gesamt Stunden"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
-msgid "Gesamtpersonalkosten"
+msgid "Total Labor Costs"
 msgstr "Gesamtpersonalkosten"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
-msgid "Sonstige Kosten (Netto)"
+msgid "Other Costs (Net)"
 msgstr "Sonstige Kosten (Netto)"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
-msgid "Gesamtkosten Netto"
+msgid "Total Costs Net"
 msgstr "Gesamtkosten Netto"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
-msgid "Gesamt Gewinn/Verlust (Netto)"
+msgid "Total Profit/Loss (Net)"
 msgstr "Gesamt Gewinn/Verlust (Netto)"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
-msgid "Gesamtverluste (Netto)"
+msgid "Total Losses (Net)"
 msgstr "Gesamtverluste (Netto)"
 
 #. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
+msgid "[DEPRECATED] Invoiced"
+msgstr "[VERALTET] In Rechnung gestellt"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
+msgid "[DEPRECATED] Paid"
+msgstr "[VERALTET] Bezahlt"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
+msgid "[DEPRECATED] Outstanding"
+msgstr "[VERALTET] Ausstehend"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
+msgid "[DEPRECATED] Vendor Bills"
+msgstr "[VERALTET] Lieferantenrechnungen"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
+msgid "[DEPRECATED] Total Costs"
+msgstr "[VERALTET] Gesamtkosten"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
+msgid "[DEPRECATED] Profit/Loss"
+msgstr "[VERALTET] Gewinn/Verlust"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_list_account_analytics
+msgid "[DEPRECATED] Losses"
+msgstr "[VERALTET] Verluste"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_pivot_account_analytics
+msgid "Project Statistics Pivot"
+msgstr "Projektstatistik Pivot"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_graph_account_analytics
+msgid "Project Statistics Chart"
+msgstr "Projektstatistik Diagramm"
+
+#. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
-msgid "Projektdetails"
+msgid "Project Details"
 msgstr "Projektdetails"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
-msgid "Analytische Buchungen"
+msgid "Analytic Entries"
 msgstr "Analytische Buchungen"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
-msgid "Daten aktualisieren"
+msgid "Show all analytic entries assigned to this project"
+msgstr "Zeigt alle Buchungszeilen die diesem Projekt zugeordnet sind"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Open the standard project view"
+msgstr "Öffnet die Standard-Projektansicht"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Refresh Data"
 msgstr "Daten aktualisieren"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
-msgid "⚠️ Keine Finanzdaten verfügbar"
+msgid "Recalculate all financial data"
+msgstr "Berechnet alle Finanzdaten neu"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "⚠️ No Financial Data Available"
 msgstr "⚠️ Keine Finanzdaten verfügbar"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
-msgid "Projektinformationen"
+msgid "This project has no analytic account assigned. All financial fields show 0.00 €."
+msgstr "Diesem Projekt ist kein analytisches Konto zugeordnet. Alle Finanzfelder zeigen 0,00 €."
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "To activate financial data:"
+msgstr "Um Finanzdaten zu aktivieren:"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Enable \"Analytic Accounting\" in accounting settings"
+msgstr "Aktivieren Sie \"Analytische Buchhaltung\" in den Buchhaltungseinstellungen"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Assign an analytic account to this project (Plan: Projects)"
+msgstr "Weisen Sie diesem Projekt ein analytisches Konto zu (Plan: Projekte)"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Ensure invoice lines have \"Analytic Distribution\" set"
+msgstr "Stellen Sie sicher, dass Rechnungszeilen \"Analytische Verteilung\" gesetzt haben"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Project Information"
 msgstr "Projektinformationen"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
-msgid "Zeiträume"
+msgid "Time Periods"
 msgstr "Zeiträume"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
-msgid "Finanzzusammenfassung"
+msgid "Financial Summary"
 msgstr "Finanzzusammenfassung"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
-msgid "NETTO-Beträge (Hauptansicht)"
+msgid "NET Amounts (Main View)"
 msgstr "NETTO-Beträge (Hauptansicht)"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
-msgid "BRUTTO-Beträge (mit MwSt.)"
+msgid "GROSS Amounts (with VAT)"
 msgstr "BRUTTO-Beträge (mit MwSt.)"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
-msgid "Kundenrechnungen"
-msgstr "Kundenrechnungen"
-
-#. module: project_statistic
-#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
-msgid "NETTO-Beträge (ohne MwSt.)"
-msgstr "NETTO-Beträge (ohne MwSt.)"
-
-#. module: project_statistic
-#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
-msgid "Skonti &amp; Rabatte"
-msgstr "Skonti & Rabatte"
-
-#. module: project_statistic
-#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
-msgid "Lieferantenrechnungen"
-msgstr "Lieferantenrechnungen"
-
-#. module: project_statistic
-#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
-msgid "Kosten"
-msgstr "Kosten"
-
-#. module: project_statistic
-#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
-msgid "Interne Kosten (NETTO)"
-msgstr "Interne Kosten (NETTO)"
-
-#. module: project_statistic
-#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
-msgid "Personalkosten"
-msgstr "Personalkosten"
-
-#. module: project_statistic
-#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
-msgid "Arbeitsstunden"
+msgid "Work Hours"
 msgstr "Arbeitsstunden"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
-msgid "Rentabilität"
+msgid "Customer Invoices"
+msgstr "Kundenrechnungen"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "NET Amounts (without VAT)"
+msgstr "NETTO-Beträge (ohne MwSt.)"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Cash Discounts &amp; Rebates"
+msgstr "Skonti & Rabatte"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Note:"
+msgstr "Hinweis:"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "NET amounts are the main amounts for profit calculation."
+msgstr "Die NETTO-Beträge sind die Hauptbeträge für die Gewinnberechnung."
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "GROSS amounts (dark gray) show total amounts incl. VAT for cash flow analysis."
+msgstr "BRUTTO-Beträge (dunkelgrau) zeigen die Gesamtbeträge inkl. MwSt. für Cashflow-Analysen."
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Paid amounts are distributed proportionally across all invoice lines."
+msgstr "Bezahlte Beträge werden proportional über alle Rechnungszeilen verteilt."
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Vendor Bills"
+msgstr "Lieferantenrechnungen"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "GROSS amounts (dark gray) show total amounts incl. VAT."
+msgstr "BRUTTO-Beträge (dunkelgrau) zeigen die Gesamtbeträge inkl. MwSt."
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Received cash discounts reduce the effective costs."
+msgstr "Erhaltene Skonti reduzieren die effektiven Kosten."
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Costs"
+msgstr "Kosten"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Internal Costs (NET)"
+msgstr "Interne Kosten (NETTO)"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Cost Breakdown (NET):"
+msgstr "Kostenaufschlüsselung (NETTO):"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Vendor Bills:"
+msgstr "Lieferantenrechnungen:"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "External costs (see \"Vendor Bills\" tab)"
+msgstr "Externe Kosten (siehe Tab \"Lieferantenrechnungen\")"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Time tracking × hourly rate (NET)"
+msgstr "Zeiterfassung × Stundensatz (NETTO)"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Other Costs:"
+msgstr "Sonstige Kosten:"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Other internal entries (NET)"
+msgstr "Andere interne Buchungen (NETTO)"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Total Costs Net:"
+msgstr "Gesamtkosten Netto:"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Labor costs + Other costs (excluding vendor bills)"
+msgstr "Personalkosten + Sonstige Kosten (ohne Lieferantenrechnungen)"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Note: All internal costs are NET amounts (without VAT)"
+msgstr "Hinweis: Alle internen Kosten sind NETTO-Beträge (ohne MwSt.)"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Profitability"
 msgstr "Rentabilität"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
-msgid "Gewinn/Verlust (NETTO-Basis)"
+msgid "Profit/Loss (NET Basis)"
 msgstr "Gewinn/Verlust (NETTO-Basis)"
 
 #. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Calculation Formula (NET Basis):"
+msgstr "Berechnungsformel (NETTO-Basis):"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Profit/Loss (Net) ="
+msgstr "Gewinn/Verlust (Netto) ="
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "(Customer Invoices Net - Cash Discounts Granted) -"
+msgstr "(Kundenrechnungen Netto - Gewährte Skonti) -"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "(Vendor Bills Net - Cash Discounts Received + Internal Costs Net)"
+msgstr "(Lieferantenrechnungen Netto - Erhaltene Skonti + Interne Kosten Netto)"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Why NET Basis?"
+msgstr "Warum NETTO-Basis?"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "✅ VAT is a pass-through item (we collect and remit)"
+msgstr "✅ MwSt. ist ein Durchlaufposten (wir ziehen ein und zahlen ab)"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "✅ NET-to-NET comparison is accounting-correct"
+msgstr "✅ NETTO-zu-NETTO Vergleich ist buchhalterisch korrekt"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "✅ Shows true project profitability without tax distortion"
+msgstr "✅ Zeigt die echte Projektrentabilität ohne Steuerverzerrung"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Interpretation:"
+msgstr "Interpretation:"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Positive Value:"
+msgstr "Positiver Wert:"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Project is profitable ✓"
+msgstr "Projekt macht Gewinn ✓"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Negative Value:"
+msgstr "Negativer Wert:"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+msgid "Project is loss-making ✗"
+msgstr "Projekt macht Verlust ✗"
+
+#. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_inherit_analytics_button
-msgid "Finanzanalyse"
+msgid "Financial Analysis"
 msgstr "Finanzanalyse"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_inherit_analytics_button
+msgid "Show detailed financial analysis with NET/GROSS comparison"
+msgstr "Zeigt detaillierte Finanzanalyse mit NETTO/BRUTTO-Vergleich"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.action_project_analytics_report
+msgid "No projects found"
+msgstr "Keine Projekte gefunden"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.action_project_analytics_report
+msgid "This view shows all projects for analysis and reporting purposes with detailed customer and vendor tracking."
+msgstr "Diese Ansicht zeigt alle Projekte für Analyse- und Berichtszwecke mit detaillierter Kunden- und Lieferantenverfolgung."
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.action_project_analytics_report
+msgid "NET vs. GROSS:"
+msgstr "NETTO vs. BRUTTO:"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.action_project_analytics_report
+msgid "NET Amounts:"
+msgstr "NETTO-Beträge:"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.action_project_analytics_report
+msgid "Main amounts for profit calculation (without VAT)"
+msgstr "Hauptbeträge für Gewinnberechnung (ohne MwSt.)"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.action_project_analytics_report
+msgid "GROSS Amounts (dark gray):"
+msgstr "BRUTTO-Beträge (dunkelgrau):"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.action_project_analytics_report
+msgid "Total amounts for cash flow analysis (with VAT)"
+msgstr "Gesamtbeträge für Cashflow-Analyse (mit MwSt.)"
 
 #. module: project_statistic
 #: code:addons/project_statistic/models/project_analytics.py:0

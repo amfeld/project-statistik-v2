@@ -31,11 +31,11 @@
 
                 <!-- Customer Invoice Fields - GROSS (dunkelgrau) -->
                 <field name="customer_invoiced_amount_gross" sum="Gesamt in Rechnung gestellt (Brutto)" optional="hide"
-                       widget="monetary" decoration-muted="1"/>
+                       widget="monetary" class="text-muted" decoration-muted="customer_invoiced_amount_gross or not customer_invoiced_amount_gross"/>
                 <field name="customer_paid_amount_gross" sum="Gesamt bezahlt (Brutto)" optional="hide"
-                       widget="monetary" decoration-muted="1"/>
+                       widget="monetary" class="text-muted" decoration-muted="customer_paid_amount_gross or not customer_paid_amount_gross"/>
                 <field name="customer_outstanding_amount_gross" sum="Gesamt ausstehend (Brutto)" optional="hide"
-                       widget="monetary" decoration-muted="1"/>
+                       widget="monetary" class="text-muted" decoration-muted="customer_outstanding_amount_gross or not customer_outstanding_amount_gross"/>
 
                 <!-- Skonto -->
                 <field name="customer_skonto_taken" sum="Gesamt gewährte Skonti" optional="hide"
@@ -47,7 +47,7 @@
 
                 <!-- Vendor Bills - GROSS (dunkelgrau) -->
                 <field name="vendor_bills_total_gross" sum="Gesamt Lieferantenrechnungen (Brutto)" optional="hide"
-                       widget="monetary" decoration-muted="1"/>
+                       widget="monetary" class="text-muted" decoration-muted="vendor_bills_total_gross or not vendor_bills_total_gross"/>
 
                 <field name="vendor_skonto_received" sum="Gesamt erhaltene Skonti" optional="hide"
                        widget="monetary"/>
@@ -76,19 +76,19 @@
 
                 <!-- Legacy/Deprecated fields (hidden by default) -->
                 <field name="customer_invoiced_amount" sum="[VERALTET] In Rechnung gestellt" optional="hide"
-                       widget="monetary" decoration-muted="1"/>
+                       widget="monetary" class="text-muted" decoration-muted="customer_invoiced_amount or not customer_invoiced_amount"/>
                 <field name="customer_paid_amount" sum="[VERALTET] Bezahlt" optional="hide"
-                       widget="monetary" decoration-muted="1"/>
+                       widget="monetary" class="text-muted" decoration-muted="customer_paid_amount or not customer_paid_amount"/>
                 <field name="customer_outstanding_amount" sum="[VERALTET] Ausstehend" optional="hide"
-                       widget="monetary" decoration-muted="1"/>
+                       widget="monetary" class="text-muted" decoration-muted="customer_outstanding_amount or not customer_outstanding_amount"/>
                 <field name="vendor_bills_total" sum="[VERALTET] Lieferantenrechnungen" optional="hide"
-                       widget="monetary" decoration-muted="1"/>
+                       widget="monetary" class="text-muted" decoration-muted="vendor_bills_total or not vendor_bills_total"/>
                 <field name="total_costs_with_tax" sum="[VERALTET] Gesamtkosten" optional="hide"
-                       widget="monetary" decoration-muted="1"/>
+                       widget="monetary" class="text-muted" decoration-muted="total_costs_with_tax or not total_costs_with_tax"/>
                 <field name="profit_loss" sum="[VERALTET] Gewinn/Verlust" optional="hide"
-                       widget="monetary" decoration-muted="1"/>
+                       widget="monetary" class="text-muted" decoration-muted="profit_loss or not profit_loss"/>
                 <field name="negative_difference" sum="[VERALTET] Verluste" optional="hide"
-                       widget="monetary" decoration-muted="1"/>
+                       widget="monetary" class="text-muted" decoration-muted="negative_difference or not negative_difference"/>
             </list>
         </field>
     </record>

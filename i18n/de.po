@@ -321,8 +321,25 @@ msgstr "Projektdetails"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_account_analytic_line_list_enhanced
 msgid "Analytic Entries"
 msgstr "Analytische Buchungen"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_account_analytic_line_list_enhanced
+msgid "Total Quantity"
+msgstr "Gesamtmenge"
+
+#. module: project_statistic
+#: model_terms:ir.ui.view,arch_db:project_statistic.view_account_analytic_line_list_enhanced
+msgid "Total Amount (Net)"
+msgstr "Gesamtbetrag (Netto)"
+
+#. module: project_statistic
+#: code:addons/project_statistic/models/project_analytics.py:0
+#, python-format
+msgid "Analytic Entries - %s"
+msgstr "Analytische Buchungen - %s"
 
 #. module: project_statistic
 #: model_terms:ir.ui.view,arch_db:project_statistic.view_project_form_account_analytics

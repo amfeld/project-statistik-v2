@@ -687,7 +687,7 @@ class ProjectAnalytics(models.Model):
 
     def action_view_account_analytic_line(self):
         """
-        Open analytic lines for this project.
+        Open analytic lines for this project with enhanced view showing NET amounts.
         Shows all account.analytic.line records associated with the project's analytic account.
         """
         self.ensure_one()
@@ -710,11 +710,19 @@ class ProjectAnalytics(models.Model):
                 }
             }
 
+        # Get the custom list view
+        try:
+            list_view = self.env.ref('project_statistic.view_account_analytic_line_list_enhanced')
+            list_view_id = list_view.id
+        except ValueError:
+            list_view_id = False
+
         return {
             'type': 'ir.actions.act_window',
-            'name': f'Analytic Lines - {self.name}',
+            'name': _('Analytic Entries - %s') % self.name,
             'res_model': 'account.analytic.line',
             'view_mode': 'list,form',
+            'views': [(list_view_id, 'list'), (False, 'form')],
             'domain': [('account_id', '=', analytic_account.id)],
             'context': {'default_account_id': analytic_account.id},
             'target': 'current',

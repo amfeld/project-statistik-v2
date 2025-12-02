@@ -11,84 +11,84 @@
                 </header>
 
                 <!-- Basic Information -->
-                <field name="client_name"/>
-                <field name="name"/>
-                <field name="head_of_project"/>
+                <field name="client_name" width="200px"/>
+                <field name="name" width="250px"/>
+                <field name="head_of_project" width="150px"/>
 
                 <!-- Data Availability Status -->
                 <field name="data_availability_status" widget="badge"
                        decoration-success="data_availability_status == 'available'"
                        decoration-danger="data_availability_status == 'no_analytic_account'"
-                       optional="show"/>
+                       optional="show" width="120px"/>
 
                 <!-- Customer Invoice Fields - NET (primary) -->
                 <field name="customer_invoiced_amount_net" sum="Total Invoiced (Net)" optional="show"
-                       widget="monetary" decoration-bf="1"/>
+                       widget="monetary" decoration-bf="1" width="140px"/>
                 <field name="customer_paid_amount_net" sum="Total Paid (Net)" optional="show"
-                       widget="monetary"/>
+                       widget="monetary" width="140px"/>
                 <field name="customer_outstanding_amount_net" sum="Total Outstanding (Net)" optional="show"
-                       widget="monetary" decoration-danger="customer_outstanding_amount_net != 0"/>
+                       widget="monetary" decoration-danger="customer_outstanding_amount_net != 0" width="140px"/>
 
                 <!-- Customer Invoice Fields - GROSS (dunkelgrau) -->
                 <field name="customer_invoiced_amount_gross" sum="Total Invoiced (Gross)" optional="hide"
-                       widget="monetary" class="text-muted" decoration-muted="customer_invoiced_amount_gross or not customer_invoiced_amount_gross"/>
+                       widget="monetary" class="text-muted" decoration-muted="customer_invoiced_amount_gross or not customer_invoiced_amount_gross" width="140px"/>
                 <field name="customer_paid_amount_gross" sum="Total Paid (Gross)" optional="hide"
-                       widget="monetary" class="text-muted" decoration-muted="customer_paid_amount_gross or not customer_paid_amount_gross"/>
+                       widget="monetary" class="text-muted" decoration-muted="customer_paid_amount_gross or not customer_paid_amount_gross" width="140px"/>
                 <field name="customer_outstanding_amount_gross" sum="Total Outstanding (Gross)" optional="hide"
-                       widget="monetary" class="text-muted" decoration-muted="customer_outstanding_amount_gross or not customer_outstanding_amount_gross"/>
+                       widget="monetary" class="text-muted" decoration-muted="customer_outstanding_amount_gross or not customer_outstanding_amount_gross" width="140px"/>
 
                 <!-- Skonto -->
                 <field name="customer_skonto_taken" sum="Total Cash Discounts Granted" optional="hide"
-                       widget="monetary"/>
+                       widget="monetary" width="140px"/>
 
                 <!-- Vendor Bills - NET (primary) -->
                 <field name="vendor_bills_total_net" sum="Total Vendor Bills (Net)" optional="show"
-                       widget="monetary" decoration-bf="1"/>
+                       widget="monetary" decoration-bf="1" width="140px"/>
 
                 <!-- Vendor Bills - GROSS (dunkelgrau) -->
                 <field name="vendor_bills_total_gross" sum="Total Vendor Bills (Gross)" optional="hide"
-                       widget="monetary" class="text-muted" decoration-muted="vendor_bills_total_gross or not vendor_bills_total_gross"/>
+                       widget="monetary" class="text-muted" decoration-muted="vendor_bills_total_gross or not vendor_bills_total_gross" width="140px"/>
 
                 <field name="vendor_skonto_received" sum="Total Cash Discounts Received" optional="hide"
-                       widget="monetary"/>
+                       widget="monetary" width="140px"/>
 
                 <!-- Labor -->
                 <field name="total_hours_booked" sum="Total Hours" optional="show"
-                       widget="float_time"/>
+                       widget="float_time" width="100px"/>
                 <field name="labor_costs" sum="Total Labor Costs" optional="show"
-                       widget="monetary"/>
+                       widget="monetary" width="140px"/>
 
                 <!-- Other Costs -->
                 <field name="other_costs_net" sum="Other Costs (Net)" optional="hide"
-                       widget="monetary"/>
+                       widget="monetary" width="140px"/>
 
                 <!-- Total Cost Fields - NET -->
                 <field name="total_costs_net" sum="Total Costs Net" optional="show"
-                       widget="monetary" decoration-bf="1"/>
+                       widget="monetary" decoration-bf="1" width="140px"/>
 
                 <!-- Profitability - NET -->
                 <field name="profit_loss_net" sum="Total Profit/Loss (Net)" optional="show"
                        widget="monetary" decoration-bf="1"
                        decoration-success="profit_loss_net &gt; 0"
-                       decoration-danger="profit_loss_net &lt; 0"/>
+                       decoration-danger="profit_loss_net &lt; 0" width="140px"/>
                 <field name="negative_difference_net" sum="Total Losses (Net)" optional="hide"
-                       widget="monetary"/>
+                       widget="monetary" width="140px"/>
 
                 <!-- Legacy/Deprecated fields (hidden by default) -->
                 <field name="customer_invoiced_amount" sum="[DEPRECATED] Invoiced" optional="hide"
-                       widget="monetary" class="text-muted" decoration-muted="customer_invoiced_amount or not customer_invoiced_amount"/>
+                       widget="monetary" class="text-muted" decoration-muted="customer_invoiced_amount or not customer_invoiced_amount" width="140px"/>
                 <field name="customer_paid_amount" sum="[DEPRECATED] Paid" optional="hide"
-                       widget="monetary" class="text-muted" decoration-muted="customer_paid_amount or not customer_paid_amount"/>
+                       widget="monetary" class="text-muted" decoration-muted="customer_paid_amount or not customer_paid_amount" width="140px"/>
                 <field name="customer_outstanding_amount" sum="[DEPRECATED] Outstanding" optional="hide"
-                       widget="monetary" class="text-muted" decoration-muted="customer_outstanding_amount or not customer_outstanding_amount"/>
+                       widget="monetary" class="text-muted" decoration-muted="customer_outstanding_amount or not customer_outstanding_amount" width="140px"/>
                 <field name="vendor_bills_total" sum="[DEPRECATED] Vendor Bills" optional="hide"
-                       widget="monetary" class="text-muted" decoration-muted="vendor_bills_total or not vendor_bills_total"/>
+                       widget="monetary" class="text-muted" decoration-muted="vendor_bills_total or not vendor_bills_total" width="140px"/>
                 <field name="total_costs_with_tax" sum="[DEPRECATED] Total Costs" optional="hide"
-                       widget="monetary" class="text-muted" decoration-muted="total_costs_with_tax or not total_costs_with_tax"/>
+                       widget="monetary" class="text-muted" decoration-muted="total_costs_with_tax or not total_costs_with_tax" width="140px"/>
                 <field name="profit_loss" sum="[DEPRECATED] Profit/Loss" optional="hide"
-                       widget="monetary" class="text-muted" decoration-muted="profit_loss or not profit_loss"/>
+                       widget="monetary" class="text-muted" decoration-muted="profit_loss or not profit_loss" width="140px"/>
                 <field name="negative_difference" sum="[DEPRECATED] Losses" optional="hide"
-                       widget="monetary" class="text-muted" decoration-muted="negative_difference or not negative_difference"/>
+                       widget="monetary" class="text-muted" decoration-muted="negative_difference or not negative_difference" width="140px"/>
             </list>
         </field>
     </record>
@@ -377,6 +377,26 @@
                     </notebook>
                 </sheet>
             </form>
+        </field>
+    </record>
+
+    <!-- Custom list view for analytic lines with NET amounts -->
+    <record id="view_account_analytic_line_list_enhanced" model="ir.ui.view">
+        <field name="name">account.analytic.line.list.enhanced</field>
+        <field name="model">account.analytic.line</field>
+        <field name="arch" type="xml">
+            <list string="Analytic Entries" create="false" edit="false">
+                <field name="date" optional="show"/>
+                <field name="name" optional="show" width="300px"/>
+                <field name="account_id" optional="show" width="200px"/>
+                <field name="partner_id" optional="show" width="200px"/>
+                <field name="product_id" optional="hide" width="200px"/>
+                <field name="unit_amount" optional="show" sum="Total Quantity" widget="float_time" width="120px"/>
+                <field name="amount" optional="show" sum="Total Amount (Net)" widget="monetary" decoration-bf="1" width="150px"/>
+                <field name="currency_id" optional="hide"/>
+                <field name="company_id" optional="hide" groups="base.group_multi_company"/>
+                <field name="move_line_id" optional="hide" width="200px"/>
+            </list>
         </field>
     </record>
 

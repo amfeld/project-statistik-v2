@@ -43,21 +43,21 @@ class ProjectAnalytics(models.Model):
         string='Invoiced Amount (Net)',
         compute='_compute_financial_data',
         store=True,
-        group_operator='sum',
+        aggregator='sum',
         help="Net amount invoiced to customers (without VAT/tax). This is the base amount before taxes are added. Uses price_subtotal from invoice lines."
     )
     customer_paid_amount_net = fields.Float(
         string='Paid Amount (Net)',
         compute='_compute_financial_data',
         store=True,
-        group_operator='sum',
+        aggregator='sum',
         help="Net amount actually paid by customers (without VAT/tax). Calculated proportionally based on invoice payment status."
     )
     customer_outstanding_amount_net = fields.Float(
         string='Outstanding Amount (Net)',
         compute='_compute_financial_data',
         store=True,
-        group_operator='sum',
+        aggregator='sum',
         help="Net amount still owed by customers (without VAT/tax). This is Invoiced Net - Paid Net."
     )
 
@@ -66,21 +66,21 @@ class ProjectAnalytics(models.Model):
         string='Invoiced Amount (Gross)',
         compute='_compute_financial_data',
         store=True,
-        group_operator='sum',
+        aggregator='sum',
         help="Gross amount invoiced to customers (with VAT/tax). This is the total amount including all taxes. Uses price_total from invoice lines."
     )
     customer_paid_amount_gross = fields.Float(
         string='Paid Amount (Gross)',
         compute='_compute_financial_data',
         store=True,
-        group_operator='sum',
+        aggregator='sum',
         help="Gross amount actually paid by customers (with VAT/tax). Calculated proportionally based on invoice payment status."
     )
     customer_outstanding_amount_gross = fields.Float(
         string='Outstanding Amount (Gross)',
         compute='_compute_financial_data',
         store=True,
-        group_operator='sum',
+        aggregator='sum',
         help="Gross amount still owed by customers (with VAT/tax). This is Invoiced Gross - Paid Gross."
     )
 
@@ -89,7 +89,7 @@ class ProjectAnalytics(models.Model):
         string='Vendor Bills (Net)',
         compute='_compute_financial_data',
         store=True,
-        group_operator='sum',
+        aggregator='sum',
         help="Net amount of vendor bills (without VAT/tax). This is the base cost before taxes. Uses price_subtotal from bill lines."
     )
 
@@ -98,7 +98,7 @@ class ProjectAnalytics(models.Model):
         string='Vendor Bills (Gross)',
         compute='_compute_financial_data',
         store=True,
-        group_operator='sum',
+        aggregator='sum',
         help="Gross amount of vendor bills (with VAT/tax). This is the total cost including all taxes. Uses price_total from bill lines."
     )
 
@@ -107,14 +107,14 @@ class ProjectAnalytics(models.Model):
         string='Customer Cash Discounts (Skonto)',
         compute='_compute_financial_data',
         store=True,
-        group_operator='sum',
+        aggregator='sum',
         help="Cash discounts granted to customers for early payment (Gewährte Skonti). This reduces project revenue. Calculated from expense accounts 7300-7303 and liability account 2130."
     )
     vendor_skonto_received = fields.Float(
         string='Vendor Cash Discounts Received',
         compute='_compute_financial_data',
         store=True,
-        group_operator='sum',
+        aggregator='sum',
         help="Cash discounts received from vendors for early payment (Erhaltene Skonti). This reduces project costs and increases profit. Calculated from income accounts 4730-4733 and asset account 2670."
     )
 
@@ -123,14 +123,14 @@ class ProjectAnalytics(models.Model):
         string='Total Hours Booked',
         compute='_compute_financial_data',
         store=True,
-        group_operator='sum',
+        aggregator='sum',
         help="Total hours logged in timesheets for this project (Gebuchte Stunden). This includes all timesheet entries from employees working on this project. Used to track resource utilization and calculate labor costs."
     )
     labor_costs = fields.Float(
         string='Labor Costs',
         compute='_compute_financial_data',
         store=True,
-        group_operator='sum',
+        aggregator='sum',
         help="Total cost of labor based on timesheets (Personalkosten). Calculated from timesheet entries multiplied by employee hourly rates. This is a major component of internal project costs. NET amount (no VAT on internal labor)."
     )
 
@@ -139,7 +139,7 @@ class ProjectAnalytics(models.Model):
         string='Other Costs (Net)',
         compute='_compute_financial_data',
         store=True,
-        group_operator='sum',
+        aggregator='sum',
         help="Other internal costs excluding labor and vendor bills (net amount without VAT). These are miscellaneous project expenses tracked via analytic lines."
     )
 
@@ -148,7 +148,7 @@ class ProjectAnalytics(models.Model):
         string='Total Costs (Net)',
         compute='_compute_financial_data',
         store=True,
-        group_operator='sum',
+        aggregator='sum',
         help="Total internal project costs without tax (Nettokosten). Calculated as: Labor Costs + Other Costs (Net). Vendor bills are tracked separately. All amounts are NET (without VAT)."
     )
 
@@ -157,14 +157,14 @@ class ProjectAnalytics(models.Model):
         string='Profit/Loss (Net)',
         compute='_compute_financial_data',
         store=True,
-        group_operator='sum',
+        aggregator='sum',
         help="Project profitability based on NET amounts (Gewinn/Verlust Netto). Formula: (Invoiced Net - Customer Skonto) - (Vendor Bills Net - Vendor Skonto + Total Costs Net). Consistent NET-to-NET calculation for accurate accounting. A positive value indicates profit, negative indicates loss."
     )
     negative_difference_net = fields.Float(
         string='Losses (Net)',
         compute='_compute_financial_data',
         store=True,
-        group_operator='sum',
+        aggregator='sum',
         help="Total project losses as a positive number, NET basis (Verluste Netto). This shows the absolute value of negative profit/loss. If profit/loss is positive, this field is 0. Useful for tracking and reporting total losses."
     )
 
@@ -173,49 +173,49 @@ class ProjectAnalytics(models.Model):
         string='Total Invoiced Amount (Deprecated)',
         compute='_compute_financial_data',
         store=True,
-        group_operator='sum',
+        aggregator='sum',
         help="DEPRECATED: Use customer_invoiced_amount_net or customer_invoiced_amount_gross instead. Currently returns GROSS amount for backwards compatibility."
     )
     customer_paid_amount = fields.Float(
         string='Total Paid Amount (Deprecated)',
         compute='_compute_financial_data',
         store=True,
-        group_operator='sum',
+        aggregator='sum',
         help="DEPRECATED: Use customer_paid_amount_net or customer_paid_amount_gross instead. Currently returns GROSS amount for backwards compatibility."
     )
     customer_outstanding_amount = fields.Float(
         string='Outstanding Amount (Deprecated)',
         compute='_compute_financial_data',
         store=True,
-        group_operator='sum',
+        aggregator='sum',
         help="DEPRECATED: Use customer_outstanding_amount_net or customer_outstanding_amount_gross instead. Currently returns GROSS amount for backwards compatibility."
     )
     vendor_bills_total = fields.Float(
         string='Vendor Bills Total (Deprecated)',
         compute='_compute_financial_data',
         store=True,
-        group_operator='sum',
+        aggregator='sum',
         help="DEPRECATED: Use vendor_bills_total_net or vendor_bills_total_gross instead. Currently returns GROSS amount for backwards compatibility."
     )
     total_costs_with_tax = fields.Float(
         string='Total Costs (with tax) (Deprecated)',
         compute='_compute_financial_data',
         store=True,
-        group_operator='sum',
+        aggregator='sum',
         help="DEPRECATED: This field is no longer calculated. Use total_costs_net for accurate NET costs or add vendor_bills_total_gross for total project costs including vendor bills."
     )
     profit_loss = fields.Float(
         string='Profit/Loss Amount (Deprecated)',
         compute='_compute_financial_data',
         store=True,
-        group_operator='sum',
+        aggregator='sum',
         help="DEPRECATED: Use profit_loss_net instead. Currently returns NET-based profit/loss for backwards compatibility."
     )
     negative_difference = fields.Float(
         string='Negative Differences (Deprecated)',
         compute='_compute_financial_data',
         store=True,
-        group_operator='sum',
+        aggregator='sum',
         help="DEPRECATED: Use negative_difference_net instead. Currently returns NET-based losses for backwards compatibility."
     )
 

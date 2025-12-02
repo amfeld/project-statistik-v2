@@ -10,8 +10,8 @@
                     <button name="action_refresh_financial_data" type="object" string="Refresh Financial Data" class="btn-primary"/>
                 </header>
 
-                <!-- Sequence for manual sorting - will be added by this module -->
-                <field name="sequence" widget="handle" optional="show"/>
+                <!-- Sequence for manual drag&drop sorting (handle icon only, not displayed as column) -->
+                <field name="sequence" widget="handle"/>
 
                 <!-- Project Sequence Code from OCA module (if available) -->
                 <field name="sequence_code" optional="show" width="100px"/>

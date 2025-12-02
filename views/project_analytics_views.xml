@@ -15,6 +15,12 @@
                 <field name="name"/>
                 <field name="head_of_project"/>
 
+                <!-- Data Availability Status -->
+                <field name="data_availability_status" widget="badge"
+                       decoration-success="data_availability_status == 'available'"
+                       decoration-danger="data_availability_status == 'no_analytic_account'"
+                       optional="show"/>
+
                 <!-- Customer Invoice Fields - NET (primary) -->
                 <field name="customer_invoiced_amount_net" sum="Gesamt in Rechnung gestellt (Netto)" optional="show"
                        widget="monetary" decoration-bf="1"/>
@@ -196,6 +202,20 @@
                         </h1>
                     </div>
 
+                    <!-- Data Availability Warning -->
+                    <div class="alert alert-danger" role="alert" invisible="data_availability_status == 'available'">
+                        <strong>⚠️ Keine Finanzdaten verfügbar</strong><br/>
+                        Diesem Projekt ist kein analytisches Konto zugeordnet. Alle Finanzfelder zeigen 0,00 €.<br/><br/>
+                        <strong>Um Finanzdaten zu aktivieren:</strong>
+                        <ol>
+                            <li>Aktivieren Sie "Analytische Buchhaltung" in den Buchhaltungseinstellungen</li>
+                            <li>Weisen Sie diesem Projekt ein analytisches Konto zu (Plan: Projekte)</li>
+                            <li>Stellen Sie sicher, dass Rechnungszeilen "Analytische Verteilung" gesetzt haben</li>
+                        </ol>
+                    </div>
+                    <field name="data_availability_status" invisible="1"/>
+                    <field name="has_analytic_account" invisible="1"/>
+
                     <group>
                         <group name="project_info" string="Projektinformationen">
                             <field name="client_name"/>
@@ -214,6 +234,9 @@
                     <!-- Summary section with NET/GROSS comparison -->
                     <group string="Finanzzusammenfassung">
                         <group string="NETTO-Beträge (Hauptansicht)">
+                            <field name="data_availability_status" widget="badge"
+                                   decoration-success="data_availability_status == 'available'"
+                                   decoration-danger="data_availability_status == 'no_analytic_account'"/>
                             <field name="customer_invoiced_amount_net" widget="monetary"
                                    decoration-bf="1"/>
                             <field name="vendor_bills_total_net" widget="monetary"

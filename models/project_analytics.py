@@ -22,6 +22,22 @@ class ProjectAnalytics(models.Model):
         help="The person responsible for managing this project. This is the project manager assigned to the project."
     )
 
+    # Data Availability Status
+    has_analytic_account = fields.Boolean(
+        string='Has Analytic Account',
+        compute='_compute_financial_data',
+        store=True,
+        help="Indicates whether this project has a valid analytic account for financial tracking. If False, no financial data can be calculated."
+    )
+    data_availability_status = fields.Selection([
+        ('available', 'Data Available'),
+        ('no_analytic_account', 'No Analytic Account'),
+    ], string='Data Status',
+        compute='_compute_financial_data',
+        store=True,
+        help="Shows whether financial data is available for this project. 'No Analytic Account' means the project is not configured for financial tracking."
+    )
+
     # Customer Invoice fields - NET (without tax)
     customer_invoiced_amount_net = fields.Float(
         string='Invoiced Amount (Net)',
@@ -269,6 +285,10 @@ class ProjectAnalytics(models.Model):
                     f"2) This project has an analytic account assigned (Projects plan), "
                     f"3) Invoice/bill lines have analytic_distribution set."
                 )
+                # Set status fields
+                project.has_analytic_account = False
+                project.data_availability_status = 'no_analytic_account'
+
                 # Set all fields to 0.0 (not -1.0) to indicate no data
                 project.customer_invoiced_amount_net = 0.0
                 project.customer_paid_amount_net = 0.0
@@ -335,6 +355,10 @@ class ProjectAnalytics(models.Model):
             adjusted_vendor_costs_net = vendor_bills_total_net - vendor_skonto_received
             profit_loss_net = adjusted_revenue_net - (adjusted_vendor_costs_net + total_costs_net)
             negative_difference_net = abs(min(0, profit_loss_net))
+
+            # Update status fields (data available)
+            project.has_analytic_account = True
+            project.data_availability_status = 'available'
 
             # Update all computed fields
             project.customer_invoiced_amount_net = customer_invoiced_amount_net

@@ -15,18 +15,52 @@ def uninstall_hook(env):
 
     # 1. Remove computed stored fields from database
     fields_to_remove = [
+        # Status fields
+        'has_analytic_account',
+        'data_availability_status',
+
+        # Customer Invoice NET fields
+        'customer_invoiced_amount_net',
+        'customer_paid_amount_net',
+        'customer_outstanding_amount_net',
+
+        # Customer Invoice GROSS fields
+        'customer_invoiced_amount_gross',
+        'customer_paid_amount_gross',
+        'customer_outstanding_amount_gross',
+
+        # Vendor Bills NET/GROSS fields
+        'vendor_bills_total_net',
+        'vendor_bills_total_gross',
+
+        # Skonto fields
+        'customer_skonto_taken',
+        'vendor_skonto_received',
+
+        # Labor fields
+        'total_hours_booked',
+        'labor_costs',
+
+        # Other cost fields
+        'other_costs_net',
+
+        # Total cost fields
+        'total_costs_net',
+
+        # Profitability fields
+        'profit_loss_net',
+        'negative_difference_net',
+
+        # Deprecated/Legacy fields
         'customer_invoiced_amount',
         'customer_paid_amount',
         'customer_outstanding_amount',
-        'customer_skonto_taken',
         'vendor_bills_total',
-        'vendor_skonto_received',
-        'total_costs_net',
         'total_costs_with_tax',
         'profit_loss',
         'negative_difference',
-        'total_hours_booked',
-        'labor_costs',
+
+        # Basic info fields
         'client_name',
         'head_of_project'
     ]

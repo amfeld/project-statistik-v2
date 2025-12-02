@@ -422,18 +422,22 @@ class ProjectAnalytics(models.Model):
             'paid_gross': 0.0
         }
 
+        # DEBUG: Log what we're searching for
+        _logger.info(f"Searching for invoice lines for analytic account: {analytic_account.id} ({analytic_account.name})")
+
         # Find all posted customer invoice/credit note lines with this analytic account
-        # Filter by account_type to ensure we only get revenue/receivable lines
+        # RELAXED FILTER: Removed account_type filter to catch all invoice lines
+        # German accounting (SKR03/SKR04) might use different account types
         invoice_lines = self.env['account.move.line'].search([
             ('analytic_distribution', '!=', False),
             ('parent_state', '=', 'posted'),
             ('move_id.move_type', 'in', ['out_invoice', 'out_refund']),
             ('display_type', '=', False),  # Exclude section/note lines
-            '|',
-            ('account_id.account_type', '=', 'income'),
-            ('account_id.account_type', '=', 'income_other')
         ])
 
+        _logger.info(f"Found {len(invoice_lines)} potential invoice lines (before analytic filter)")
+
+        matched_lines = 0
         for line in invoice_lines:
             if not line.analytic_distribution:
                 continue
@@ -450,6 +454,7 @@ class ProjectAnalytics(models.Model):
 
                 # Check if this project's analytic account is in the distribution
                 if str(analytic_account.id) in distribution:
+                    matched_lines += 1
                     # Get the percentage allocated to this project for THIS LINE
                     percentage = distribution.get(str(analytic_account.id), 0.0) / 100.0
 
@@ -470,6 +475,8 @@ class ProjectAnalytics(models.Model):
                     result['invoiced_net'] += line_amount_net
                     result['invoiced_gross'] += line_amount_gross
 
+                    _logger.info(f"  - Invoice {invoice.name}: NET={line_amount_net:.2f}, GROSS={line_amount_gross:.2f}, Account={line.account_id.code} ({line.account_id.account_type})")
+
                     # Calculate paid amount for this line
                     # Payment proportion = (invoice.amount_total - invoice.amount_residual) / invoice.amount_total
                     if abs(invoice.amount_total) > 0:
@@ -482,6 +489,9 @@ class ProjectAnalytics(models.Model):
             except Exception as e:
                 _logger.warning(f"Error parsing analytic_distribution for line {line.id}: {e}")
                 continue
+
+        _logger.info(f"Matched {matched_lines} invoice lines for analytic account {analytic_account.id}")
+        _logger.info(f"Result: NET invoiced={result['invoiced_net']:.2f}, GROSS invoiced={result['invoiced_gross']:.2f}")
 
         return result
 
@@ -512,16 +522,22 @@ class ProjectAnalytics(models.Model):
             'total_gross': 0.0
         }
 
+        # DEBUG: Log what we're searching for
+        _logger.info(f"Searching for vendor bill lines for analytic account: {analytic_account.id} ({analytic_account.name})")
+
         # Find all posted vendor bill/refund lines with this analytic account
-        # Filter by account_type to ensure we only get expense/payable lines
+        # RELAXED FILTER: Removed account_type filter to catch all bill lines
+        # German accounting (SKR03/SKR04) might use different account types
         bill_lines = self.env['account.move.line'].search([
             ('analytic_distribution', '!=', False),
             ('parent_state', '=', 'posted'),
             ('move_id.move_type', 'in', ['in_invoice', 'in_refund']),
             ('display_type', '=', False),  # Exclude section/note lines
-            ('account_id.account_type', '=', 'expense')
         ])
 
+        _logger.info(f"Found {len(bill_lines)} potential bill lines (before analytic filter)")
+
+        matched_lines = 0
         for line in bill_lines:
             if not line.analytic_distribution:
                 continue
@@ -538,6 +554,7 @@ class ProjectAnalytics(models.Model):
 
                 # Check if this project's analytic account is in the distribution
                 if str(analytic_account.id) in distribution:
+                    matched_lines += 1
                     # Get the percentage allocated to this project for THIS LINE
                     percentage = distribution.get(str(analytic_account.id), 0.0) / 100.0
 
@@ -558,9 +575,14 @@ class ProjectAnalytics(models.Model):
                     result['total_net'] += line_amount_net
                     result['total_gross'] += line_amount_gross
 
+                    _logger.info(f"  - Bill {bill.name}: NET={line_amount_net:.2f}, GROSS={line_amount_gross:.2f}, Account={line.account_id.code} ({line.account_id.account_type})")
+
             except Exception as e:
                 _logger.warning(f"Error parsing analytic_distribution for bill line {line.id}: {e}")
                 continue
+
+        _logger.info(f"Matched {matched_lines} bill lines for analytic account {analytic_account.id}")
+        _logger.info(f"Result: NET bills={result['total_net']:.2f}, GROSS bills={result['total_gross']:.2f}")
 
         return result
 

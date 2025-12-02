@@ -5,20 +5,20 @@
         <field name="name">project.project.list.account.analytics</field>
         <field name="model">project.project</field>
         <field name="arch" type="xml">
-            <list string="Project Statistics" create="false" edit="false" delete="false" limit="500">
+            <list string="Project Statistics" create="false" edit="false" delete="false" limit="500" default_order="sequence,id">
                 <header>
                     <button name="action_refresh_financial_data" type="object" string="Refresh Financial Data" class="btn-primary"/>
                 </header>
 
-                <!-- Sequence for manual sorting (OCA module) - will be hidden if field doesn't exist -->
+                <!-- Sequence for manual sorting - will be added by this module -->
                 <field name="sequence" widget="handle" optional="show"/>
 
-                <!-- Project Sequence from OCA module (if available) -->
-                <field name="project_sequence" optional="show" width="100px"/>
+                <!-- Project Sequence Code from OCA module (if available) -->
+                <field name="sequence_code" optional="show" width="100px"/>
 
                 <!-- Basic Information -->
                 <field name="client_name" width="200px"/>
-                <field name="name" width="250px"/>
+                <field name="display_name" width="250px"/>
                 <field name="head_of_project" width="150px"/>
 
                 <!-- Data Availability Status -->

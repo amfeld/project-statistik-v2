@@ -22,6 +22,13 @@ class ProjectAnalytics(models.Model):
         help="The person responsible for managing this project. This is the project manager assigned to the project."
     )
 
+    # Sequence for manual drag&drop sorting in list view
+    sequence = fields.Integer(
+        string='Sequence',
+        default=10,
+        help="Used for manual sorting in the project statistics list view. Lower numbers appear first."
+    )
+
     # Data Availability Status
     has_analytic_account = fields.Boolean(
         string='Has Analytic Account',

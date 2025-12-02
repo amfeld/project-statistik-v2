@@ -62,7 +62,8 @@ def uninstall_hook(env):
 
         # Basic info fields
         'client_name',
-        'head_of_project'
+        'head_of_project',
+        'sequence'
     ]
 
     # Drop each column individually using safe identifier quoting

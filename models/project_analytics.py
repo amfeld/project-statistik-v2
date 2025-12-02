@@ -782,15 +782,20 @@ class ProjectAnalytics(models.Model):
         """
         Manually refresh/recompute all financial data for selected projects.
         This is useful when invoices or analytic lines are added/modified.
+        Reloads the view after calculation to show updated values.
         """
         self._compute_financial_data()
+
+        # Return a reload action with notification
         return {
             'type': 'ir.actions.client',
-            'tag': 'display_notification',
+            'tag': 'reload',
             'params': {
-                'title': _('Financial Data Refreshed'),
-                'message': f'Financial data has been recalculated for {len(self)} project(s).',
-                'type': 'success',
-                'sticky': False,
+                'notification': {
+                    'title': _('Financial Data Refreshed'),
+                    'message': _('Financial data has been recalculated for %s project(s).') % len(self),
+                    'type': 'success',
+                    'sticky': False,
+                }
             }
         }

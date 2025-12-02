@@ -758,17 +758,24 @@ class ProjectAnalytics(models.Model):
         Called from the standard project form view button.
         """
         self.ensure_one()
+
         # Get the analytics form view ID
-        analytics_form_view = self.env.ref('project_statistic.view_project_form_account_analytics', raise_if_not_found=False)
+        try:
+            analytics_form_view = self.env.ref('project_statistic.view_project_form_account_analytics')
+            view_id = analytics_form_view.id
+        except ValueError:
+            _logger.error("Analytics form view not found: project_statistic.view_project_form_account_analytics")
+            view_id = False
 
         return {
             'type': 'ir.actions.act_window',
-            'name': f'Analytics - {self.name}',
+            'name': _('Financial Analysis - %s') % self.name,
             'res_model': 'project.project',
             'res_id': self.id,
             'view_mode': 'form',
-            'view_id': analytics_form_view.id if analytics_form_view else False,
+            'views': [(view_id, 'form')],
             'target': 'current',
+            'context': dict(self.env.context, form_view_initial_mode='readonly'),
         }
 
     def action_refresh_financial_data(self):

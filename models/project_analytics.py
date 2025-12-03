@@ -136,7 +136,11 @@ class ProjectAnalytics(models.Model):
         - account.move.line records (for invoices and vendor bills)
         - account.analytic.line records (for timesheets and other costs)
         """
+        _logger.info(f"=== _compute_financial_data called for {len(self)} project(s) ===")
+
         for project in self:
+            _logger.info(f"Computing financial data for project: {project.name} (ID: {project.id})")
+
             # Initialize all fields
             customer_invoiced_amount = 0.0
             customer_paid_amount = 0.0
@@ -155,8 +159,9 @@ class ProjectAnalytics(models.Model):
 
             # Get the analytic account associated with the project (projects plan ONLY)
             analytic_account = self._get_project_analytic_account(project)
-            
+
             if not analytic_account:
+                _logger.warning(f"No analytic account found for project {project.name} (ID: {project.id})")
                 project.customer_invoiced_amount = 0.0
                 project.customer_paid_amount = 0.0
                 project.customer_outstanding_amount = 0.0
@@ -173,25 +178,31 @@ class ProjectAnalytics(models.Model):
                 project.labor_costs_adjusted = 0.0
                 continue
 
+            _logger.info(f"Found analytic account: {analytic_account.name} (ID: {analytic_account.id})")
+
             # 1. Calculate Customer Invoices (Revenue) - NET amounts only
             customer_data = self._get_customer_invoices_from_analytic(analytic_account)
             customer_invoiced_amount = customer_data['invoiced']
             customer_paid_amount = customer_data['paid']
+            _logger.info(f"Customer invoices: invoiced={customer_invoiced_amount}, paid={customer_paid_amount}")
 
             # 2. Calculate Vendor Bills (Direct Costs) - NET amounts only
             vendor_data = self._get_vendor_bills_from_analytic(analytic_account)
             vendor_bills_total = vendor_data['total']
+            _logger.info(f"Vendor bills: total={vendor_bills_total}")
 
             # 3. Calculate Skonto (Cash Discounts) from analytic lines
             skonto_data = self._get_skonto_from_analytic(analytic_account)
             customer_skonto_taken = skonto_data['customer_skonto']
             vendor_skonto_received = skonto_data['vendor_skonto']
+            _logger.info(f"Skonto: customer={customer_skonto_taken}, vendor={vendor_skonto_received}")
 
             # 4. Calculate Labor Costs (Timesheets)
             timesheet_data = self._get_timesheet_costs(analytic_account)
             total_hours_booked = timesheet_data['hours']
             total_hours_booked_adjusted = timesheet_data['hours_adjusted']
             labor_costs = timesheet_data['costs']
+            _logger.info(f"Timesheets: hours={total_hours_booked}, hours_adj={total_hours_booked_adjusted}, costs={labor_costs}")
 
             # 4b. Calculate Labor Costs Bereinigt (Adjusted Labor Costs)
             # Use custom hourly rate from context or system parameter
@@ -201,13 +212,15 @@ class ProjectAnalytics(models.Model):
                     'project_analytics.default_hourly_rate', '66.0'
                 ))
             labor_costs_adjusted = total_hours_booked_adjusted * hourly_rate
+            _logger.info(f"Labor costs adjusted: {labor_costs_adjusted} (rate: {hourly_rate})")
 
             # 5. Calculate Other Costs (non-timesheet, non-bill analytic lines)
             other_costs = self._get_other_costs_from_analytic(analytic_account)
+            _logger.info(f"Other costs: {other_costs}")
 
             # 6. Calculate totals - all NET amounts
             total_costs_net = labor_costs + other_costs
-            
+
             # total_costs_with_tax is deprecated but kept for backwards compatibility
             total_costs_with_tax = total_costs_net
 
@@ -221,6 +234,8 @@ class ProjectAnalytics(models.Model):
             adjusted_vendor_costs = vendor_bills_total - vendor_skonto_received
             profit_loss = adjusted_revenue - (adjusted_vendor_costs + total_costs_net)
             negative_difference = abs(min(0, profit_loss))
+
+            _logger.info(f"Final totals: revenue={adjusted_revenue}, costs={adjusted_vendor_costs + total_costs_net}, profit={profit_loss}")
 
             # Update all computed fields
             project.customer_invoiced_amount = customer_invoiced_amount
@@ -237,6 +252,8 @@ class ProjectAnalytics(models.Model):
             project.total_hours_booked_adjusted = total_hours_booked_adjusted
             project.labor_costs = labor_costs
             project.labor_costs_adjusted = labor_costs_adjusted
+
+            _logger.info(f"=== Finished computing for project {project.name} ===")
 
     def _get_project_analytic_account(self, project):
         """
@@ -283,6 +300,8 @@ class ProjectAnalytics(models.Model):
         """
         result = {'invoiced': 0.0, 'paid': 0.0}
 
+        _logger.info(f"Searching for customer invoices for analytic account: {analytic_account.name} (ID: {analytic_account.id})")
+
         # Find all posted customer invoice/credit note lines with this analytic account
         invoice_lines = self.env['account.move.line'].search([
             ('analytic_distribution', '!=', False),
@@ -294,11 +313,14 @@ class ProjectAnalytics(models.Model):
             ('account_id.account_type', '=', 'income_other')
         ])
 
+        _logger.info(f"Found {len(invoice_lines)} invoice lines with analytic_distribution")
+
         # Prefetch for performance
         invoice_lines.mapped('move_id.payment_state')
         invoice_lines.mapped('move_id.move_type')
         invoice_lines.mapped('move_id.reversed_entry_id')
 
+        matched_lines = 0
         for line in invoice_lines:
             if not line.analytic_distribution:
                 continue
@@ -318,6 +340,7 @@ class ProjectAnalytics(models.Model):
 
                 # Check if this project's analytic account is in the distribution
                 if str(analytic_account.id) in distribution:
+                    matched_lines += 1
                     # Get the percentage allocated to this project for THIS LINE
                     percentage = distribution.get(str(analytic_account.id), 0.0) / 100.0
 
@@ -333,6 +356,8 @@ class ProjectAnalytics(models.Model):
 
                     result['invoiced'] += line_amount
 
+                    _logger.debug(f"Matched invoice line {line.id}: {invoice.name}, amount={line_amount}, payment_state={invoice.payment_state}")
+
                     # Calculate paid amount - CONSERVATIVE approach
                     # Only count invoices that are fully paid to avoid ambiguity
                     # (We don't know which lines were paid in partial payments)
@@ -347,6 +372,7 @@ class ProjectAnalytics(models.Model):
                 _logger.warning(f"Error parsing analytic_distribution for invoice line {line.id}: {e}")
                 continue
 
+        _logger.info(f"Matched {matched_lines} invoice lines for this project. Total invoiced: {result['invoiced']}, paid: {result['paid']}")
         return result
 
     def _get_vendor_bills_from_analytic(self, analytic_account):
@@ -365,6 +391,8 @@ class ProjectAnalytics(models.Model):
         """
         result = {'total': 0.0}
 
+        _logger.info(f"Searching for vendor bills for analytic account: {analytic_account.name} (ID: {analytic_account.id})")
+
         # Find all posted vendor bill/refund lines with this analytic account
         bill_lines = self.env['account.move.line'].search([
             ('analytic_distribution', '!=', False),
@@ -374,10 +402,13 @@ class ProjectAnalytics(models.Model):
             ('account_id.account_type', '=', 'expense')
         ])
 
+        _logger.info(f"Found {len(bill_lines)} vendor bill lines with analytic_distribution")
+
         # Prefetch for performance
         bill_lines.mapped('move_id.move_type')
         bill_lines.mapped('move_id.reversed_entry_id')
 
+        matched_lines = 0
         for line in bill_lines:
             if not line.analytic_distribution:
                 continue
@@ -396,6 +427,7 @@ class ProjectAnalytics(models.Model):
 
                 # Check if this project's analytic account is in the distribution
                 if str(analytic_account.id) in distribution:
+                    matched_lines += 1
                     # Get the percentage allocated to this project for THIS LINE
                     percentage = distribution.get(str(analytic_account.id), 0.0) / 100.0
 
@@ -411,10 +443,13 @@ class ProjectAnalytics(models.Model):
 
                     result['total'] += line_amount
 
+                    _logger.debug(f"Matched vendor bill line {line.id}: {bill.name}, amount={line_amount}")
+
             except Exception as e:
                 _logger.warning(f"Error parsing analytic_distribution for bill line {line.id}: {e}")
                 continue
 
+        _logger.info(f"Matched {matched_lines} vendor bill lines for this project. Total: {result['total']}")
         return result
 
     def _get_skonto_accounts(self):

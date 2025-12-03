@@ -1,6 +1,6 @@
 {
     'name': 'Project Statistic',
-    'version': '18.0.1.0.5',
+    'version': '18.0.1.0.6',
     'category': 'Project',
     'summary': 'Enhanced project analytics with financial data',
     'description': """
@@ -24,6 +24,7 @@
     'license': 'LGPL-3',
     'data': [
         'security/ir.model.access.csv',
+        'data/ir_config_parameter.xml',
         'views/project_analytics_views.xml',
         'data/menuitem.xml',
     ],

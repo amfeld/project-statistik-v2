@@ -40,6 +40,8 @@ def uninstall_hook(env):
         # Labor fields
         'total_hours_booked',
         'labor_costs',
+        'total_hours_booked_adjusted',
+        'labor_costs_adjusted',
 
         # Other cost fields
         'other_costs_net',

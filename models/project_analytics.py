@@ -140,6 +140,20 @@ class ProjectAnalytics(models.Model):
         aggregator='sum',
         help="Total cost of labor based on timesheets (Personalkosten). Calculated from timesheet entries multiplied by employee hourly rates. This is a major component of internal project costs. NET amount (no VAT on internal labor)."
     )
+    total_hours_booked_adjusted = fields.Float(
+        string='Total Hours Booked (Adjusted)',
+        compute='_compute_financial_data',
+        store=True,
+        aggregator='sum',
+        help="Adjusted total hours based on employee HFC (Hourly Forecast Correction) factors. Formula: sum(hours * employee.faktor_hfc). This provides a more accurate forecast of actual work effort by adjusting for employee efficiency factors."
+    )
+    labor_costs_adjusted = fields.Float(
+        string='Labor Costs (Adjusted)',
+        compute='_compute_financial_data',
+        store=True,
+        aggregator='sum',
+        help="Adjusted labor costs calculated using general hourly rate from system parameters. Formula: total_hours_booked_adjusted * general_hourly_rate. Default rate is 66 EUR per hour. This provides standardized cost calculation across all employees."
+    )
 
     # Other Cost fields
     other_costs_net = fields.Float(
@@ -285,6 +299,15 @@ class ProjectAnalytics(models.Model):
             timesheet_data = self._get_timesheet_costs(analytic_account)
             total_hours_booked = timesheet_data['hours']
             labor_costs = timesheet_data['costs']
+            total_hours_booked_adjusted = timesheet_data['adjusted_hours']
+
+            # 4a. Calculate Adjusted Labor Costs using general hourly rate from system parameters
+            general_hourly_rate = float(
+                self.env['ir.config_parameter'].sudo().get_param(
+                    'project_statistic.general_hourly_rate', default='66.0'
+                )
+            )
+            labor_costs_adjusted = total_hours_booked_adjusted * general_hourly_rate
 
             # 5. Calculate Other Costs (non-timesheet, non-bill analytic lines) - NET amount
             other_costs_net = self._get_other_costs_from_analytic(analytic_account)
@@ -323,6 +346,8 @@ class ProjectAnalytics(models.Model):
 
             project.total_hours_booked = total_hours_booked
             project.labor_costs = labor_costs
+            project.total_hours_booked_adjusted = total_hours_booked_adjusted
+            project.labor_costs_adjusted = labor_costs_adjusted
             project.other_costs_net = other_costs_net
             project.total_costs_net = total_costs_net
 
@@ -616,8 +641,9 @@ class ProjectAnalytics(models.Model):
         Timesheets have is_timesheet=True.
 
         Returns NET amounts (timesheets don't have VAT).
+        Also calculates adjusted hours based on employee HFC factors.
         """
-        result = {'hours': 0.0, 'costs': 0.0}
+        result = {'hours': 0.0, 'costs': 0.0, 'adjusted_hours': 0.0}
 
         # Find all timesheet lines for this analytic account
         timesheet_lines = self.env['account.analytic.line'].search([
@@ -626,8 +652,17 @@ class ProjectAnalytics(models.Model):
         ])
 
         for line in timesheet_lines:
-            result['hours'] += line.unit_amount or 0.0
+            hours = line.unit_amount or 0.0
+            result['hours'] += hours
             result['costs'] += abs(line.amount or 0.0)
+
+            # Calculate adjusted hours using employee HFC factor
+            if line.employee_id and hasattr(line.employee_id, 'faktor_hfc'):
+                faktor_hfc = line.employee_id.faktor_hfc or 1.0
+                result['adjusted_hours'] += hours * faktor_hfc
+            else:
+                # If no employee or no HFC factor, use 1.0 (no adjustment)
+                result['adjusted_hours'] += hours
 
         return result
 

@@ -13,9 +13,6 @@
                 <!-- Sequence for manual drag&drop sorting (handle icon only, not displayed as column) -->
                 <field name="sequence" widget="handle"/>
 
-                <!-- Project Sequence Code from OCA module (if available) -->
-                <field name="sequence_code" optional="show" width="100px"/>
-
                 <!-- Basic Information -->
                 <field name="client_name" width="200px"/>
                 <field name="display_name" width="250px"/>
@@ -63,6 +60,10 @@
                        widget="float_time" width="100px"/>
                 <field name="labor_costs" sum="Total Labor Costs" optional="show"
                        widget="monetary" width="140px"/>
+                <field name="total_hours_booked_adjusted" sum="Total Hours (Adjusted)" optional="show"
+                       widget="float_time" width="120px"/>
+                <field name="labor_costs_adjusted" sum="Labor Costs (Adjusted)" optional="show"
+                       widget="monetary" decoration-bf="1" width="140px"/>
 
                 <!-- Other Costs -->
                 <field name="other_costs_net" sum="Other Costs (Net)" optional="hide"

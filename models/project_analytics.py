@@ -26,22 +26,19 @@ class ProjectAnalytics(models.Model):
     customer_invoiced_amount = fields.Float(
         string='Total Invoiced Amount',
         compute='_compute_financial_data',
-        store=True,
-        group_operator='sum',
+        store=False,
         help="Total amount invoiced to customers for this project (NET/NETTO). This includes all posted customer invoices and credit notes that are linked to this project via analytic distribution."
     )
     customer_paid_amount = fields.Float(
         string='Total Paid Amount',
         compute='_compute_financial_data',
-        store=True,
-        group_operator='sum',
+        store=False,
         help="Total amount actually paid by customers for this project (NET/NETTO). This is calculated from invoice payments and shows how much money has actually been received."
     )
     customer_outstanding_amount = fields.Float(
         string='Outstanding Amount',
         compute='_compute_financial_data',
-        store=True,
-        group_operator='sum',
+        store=False,
         help="Amount still owed by customers for this project (NET/NETTO). This is the difference between what has been invoiced and what has been paid (Invoiced - Paid). A positive value means money is still owed."
     )
 
@@ -49,8 +46,7 @@ class ProjectAnalytics(models.Model):
     vendor_bills_total = fields.Float(
         string='Vendor Bills Total',
         compute='_compute_financial_data',
-        store=True,
-        group_operator='sum',
+        store=False,
         help="Total amount of vendor bills for this project (NET/NETTO). This includes all posted vendor bills and refunds linked to this project via analytic distribution. These are external costs from suppliers."
     )
 
@@ -58,15 +54,13 @@ class ProjectAnalytics(models.Model):
     customer_skonto_taken = fields.Float(
         string='Customer Cash Discounts (Skonto)',
         compute='_compute_financial_data',
-        store=True,
-        group_operator='sum',
+        store=False,
         help="Cash discounts granted to customers for early payment (Gewährte Skonti). This reduces project revenue. Calculated from expense accounts 7300-7303 and liability account 2130."
     )
     vendor_skonto_received = fields.Float(
         string='Vendor Cash Discounts Received',
         compute='_compute_financial_data',
-        store=True,
-        group_operator='sum',
+        store=False,
         help="Cash discounts received from vendors for early payment (Erhaltene Skonti). This reduces project costs and increases profit. Calculated from income accounts 4730-4733 and asset account 2670."
     )
 
@@ -74,15 +68,13 @@ class ProjectAnalytics(models.Model):
     total_costs_net = fields.Float(
         string='Net Costs (without tax)',
         compute='_compute_financial_data',
-        store=True,
-        group_operator='sum',
+        store=False,
         help="Internal project costs without tax (Nettokosten). This includes labor costs from timesheets plus other internal costs. Vendor bills are tracked separately. This is the net amount before tax."
     )
     total_costs_with_tax = fields.Float(
         string='Total Costs (with tax)',
         compute='_compute_financial_data',
-        store=True,
-        group_operator='sum',
+        store=False,
         help="Internal project costs with tax included (Bruttokosten). This is the total internal costs including VAT. Vendor bills are tracked separately and already include their taxes. NOTE: This field is deprecated - use total_costs_net for accurate calculations."
     )
 
@@ -90,15 +82,13 @@ class ProjectAnalytics(models.Model):
     profit_loss = fields.Float(
         string='Profit/Loss Amount',
         compute='_compute_financial_data',
-        store=True,
-        group_operator='sum',
+        store=False,
         help="Project profitability (Gewinn/Verlust). Calculated as NET amounts: (Invoiced Amount - Customer Skonto) - (Vendor Bills - Vendor Skonto + Internal Net Costs). A positive value indicates profit, negative indicates loss."
     )
     negative_difference = fields.Float(
         string='Negative Differences (losses)',
         compute='_compute_financial_data',
-        store=True,
-        group_operator='sum',
+        store=False,
         help="Total project losses as a positive number (Verluste). This shows the absolute value of negative profit/loss. If profit/loss is positive, this field is 0. Useful for tracking and reporting total losses."
     )
 
@@ -106,45 +96,45 @@ class ProjectAnalytics(models.Model):
     total_hours_booked = fields.Float(
         string='Total Hours Booked',
         compute='_compute_financial_data',
-        store=True,
-        group_operator='sum',
+        store=False,
         help="Total hours logged in timesheets for this project (Gebuchte Stunden). This includes all timesheet entries from employees working on this project. Used to track resource utilization and calculate labor costs."
     )
     total_hours_booked_adjusted = fields.Float(
         string='Total Hours Booked Bereinigt',
         compute='_compute_financial_data',
-        store=True,
-        group_operator='sum',
+        store=False,
         help="Adjusted total hours based on employee Faktor HFC (Bereinigte Stunden). Calculated as sum of (timesheet hours × employee Faktor HFC) for more accurate project resource tracking."
     )
     labor_costs = fields.Float(
         string='Labor Costs',
         compute='_compute_financial_data',
-        store=True,
-        group_operator='sum',
+        store=False,
         help="Total cost of labor based on timesheets (Personalkosten). Calculated from timesheet entries multiplied by employee hourly rates. This is a major component of internal project costs."
     )
     labor_costs_adjusted = fields.Float(
         string='Labor Costs Bereinigt',
         compute='_compute_financial_data',
-        store=True,
-        group_operator='sum',
+        store=False,
         help="Adjusted labor costs calculated using custom hourly rate (Bereinigte Personalkosten). Calculated as Total Hours Booked Bereinigt × Hourly Rate from system parameter."
     )
 
-    @api.depends('partner_id', 'user_id')
+    @api.depends()
     def _compute_financial_data(self):
         """
         Compute all financial data for the project based on analytic account lines.
         This is the single source of truth for Odoo v18 accounting.
 
         Uses the standard Odoo project analytic plan (analytic.analytic_plan_projects).
-        
-        IMPORTANT: All amounts are NET (without tax) for consistency in German accounting.
 
-        Note: We depend on partner_id and user_id (guaranteed core fields) rather than
-        account_id or sale_line_id which may not exist if certain modules aren't installed.
-        The actual financial data is computed from account.analytic.line records.
+        IMPORTANT:
+        - All amounts are NET (without tax) for consistency in German accounting.
+        - All computed fields use store=False for real-time calculation.
+        - Fields are computed on-demand whenever displayed (no caching).
+        - This ensures data is always up-to-date with latest invoices/payments/timesheets.
+
+        The actual financial data is computed from:
+        - account.move.line records (for invoices and vendor bills)
+        - account.analytic.line records (for timesheets and other costs)
         """
         for project in self:
             # Initialize all fields

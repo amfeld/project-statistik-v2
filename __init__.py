@@ -1,4 +1,5 @@
 from . import models
+from . import wizard
 
 
 def uninstall_hook(env):
@@ -26,7 +27,9 @@ def uninstall_hook(env):
         'profit_loss',
         'negative_difference',
         'total_hours_booked',
+        'total_hours_booked_adjusted',
         'labor_costs',
+        'labor_costs_adjusted',
         'client_name',
         'head_of_project'
     ]

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Default hourly rate for Labor Costs Bereinigt calculation -->
+        <record id="default_hourly_rate_parameter" model="ir.config_parameter">
+            <field name="key">project_analytics.default_hourly_rate</field>
+            <field name="value">66.0</field>
+        </record>
+    </data>
+</odoo>

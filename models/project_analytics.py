@@ -110,12 +110,26 @@ class ProjectAnalytics(models.Model):
         group_operator='sum',
         help="Total hours logged in timesheets for this project (Gebuchte Stunden). This includes all timesheet entries from employees working on this project. Used to track resource utilization and calculate labor costs."
     )
+    total_hours_booked_adjusted = fields.Float(
+        string='Total Hours Booked Bereinigt',
+        compute='_compute_financial_data',
+        store=True,
+        group_operator='sum',
+        help="Adjusted total hours based on employee Faktor HFC (Bereinigte Stunden). Calculated as sum of (timesheet hours × employee Faktor HFC) for more accurate project resource tracking."
+    )
     labor_costs = fields.Float(
         string='Labor Costs',
         compute='_compute_financial_data',
         store=True,
         group_operator='sum',
         help="Total cost of labor based on timesheets (Personalkosten). Calculated from timesheet entries multiplied by employee hourly rates. This is a major component of internal project costs."
+    )
+    labor_costs_adjusted = fields.Float(
+        string='Labor Costs Bereinigt',
+        compute='_compute_financial_data',
+        store=True,
+        group_operator='sum',
+        help="Adjusted labor costs calculated using custom hourly rate (Bereinigte Personalkosten). Calculated as Total Hours Booked Bereinigt × Hourly Rate from system parameter."
     )
 
     @api.depends('partner_id', 'user_id')
@@ -145,7 +159,9 @@ class ProjectAnalytics(models.Model):
             profit_loss = 0.0
             negative_difference = 0.0
             total_hours_booked = 0.0
+            total_hours_booked_adjusted = 0.0
             labor_costs = 0.0
+            labor_costs_adjusted = 0.0
 
             # Get the analytic account associated with the project (projects plan ONLY)
             analytic_account = self._get_project_analytic_account(project)
@@ -162,7 +178,9 @@ class ProjectAnalytics(models.Model):
                 project.profit_loss = 0.0
                 project.negative_difference = 0.0
                 project.total_hours_booked = 0.0
+                project.total_hours_booked_adjusted = 0.0
                 project.labor_costs = 0.0
+                project.labor_costs_adjusted = 0.0
                 continue
 
             # 1. Calculate Customer Invoices (Revenue) - NET amounts only
@@ -182,7 +200,17 @@ class ProjectAnalytics(models.Model):
             # 4. Calculate Labor Costs (Timesheets)
             timesheet_data = self._get_timesheet_costs(analytic_account)
             total_hours_booked = timesheet_data['hours']
+            total_hours_booked_adjusted = timesheet_data['hours_adjusted']
             labor_costs = timesheet_data['costs']
+
+            # 4b. Calculate Labor Costs Bereinigt (Adjusted Labor Costs)
+            # Use custom hourly rate from context or system parameter
+            hourly_rate = self.env.context.get('custom_hourly_rate')
+            if not hourly_rate:
+                hourly_rate = float(self.env['ir.config_parameter'].sudo().get_param(
+                    'project_analytics.default_hourly_rate', '66.0'
+                ))
+            labor_costs_adjusted = total_hours_booked_adjusted * hourly_rate
 
             # 5. Calculate Other Costs (non-timesheet, non-bill analytic lines)
             other_costs = self._get_other_costs_from_analytic(analytic_account)
@@ -216,7 +244,9 @@ class ProjectAnalytics(models.Model):
             project.profit_loss = profit_loss
             project.negative_difference = negative_difference
             project.total_hours_booked = total_hours_booked
+            project.total_hours_booked_adjusted = total_hours_booked_adjusted
             project.labor_costs = labor_costs
+            project.labor_costs_adjusted = labor_costs_adjusted
 
     def _get_project_analytic_account(self, project):
         """
@@ -494,10 +524,12 @@ class ProjectAnalytics(models.Model):
         """
         Get timesheet hours and costs from account.analytic.line.
         Timesheets have is_timesheet=True.
-        
+
+        Also calculates adjusted hours using employee Faktor HFC.
+
         Returns NET amounts (timesheets don't have VAT).
         """
-        result = {'hours': 0.0, 'costs': 0.0}
+        result = {'hours': 0.0, 'hours_adjusted': 0.0, 'costs': 0.0}
 
         # Find all timesheet lines for this analytic account
         timesheet_lines = self.env['account.analytic.line'].search([
@@ -505,9 +537,21 @@ class ProjectAnalytics(models.Model):
             ('is_timesheet', '=', True)
         ])
 
+        # Prefetch employee_id for performance
+        timesheet_lines.mapped('employee_id.faktor_hfc')
+
         for line in timesheet_lines:
-            result['hours'] += line.unit_amount or 0.0
+            hours = line.unit_amount or 0.0
+            result['hours'] += hours
             result['costs'] += abs(line.amount or 0.0)
+
+            # Calculate adjusted hours using employee Faktor HFC
+            if line.employee_id and hasattr(line.employee_id, 'faktor_hfc'):
+                faktor = line.employee_id.faktor_hfc or 1.0
+                result['hours_adjusted'] += hours * faktor
+            else:
+                # No employee or no faktor - use 1.0 as default
+                result['hours_adjusted'] += hours
 
         return result
 

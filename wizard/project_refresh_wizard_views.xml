@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_project_refresh_wizard_form" model="ir.ui.view">
+        <field name="name">project.refresh.wizard.form</field>
+        <field name="model">project.refresh.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Finanzdaten aktualisieren">
+                <group>
+                    <div class="alert alert-info" role="alert">
+                        <strong>Hinweis:</strong> Geben Sie den Stundensatz ein, der für die Berechnung der bereinigten Personalkosten verwendet werden soll.
+                    </div>
+                    <field name="hourly_rate" widget="monetary"
+                           options="{'currency_field': 'false'}"/>
+                </group>
+                <footer>
+                    <button name="action_refresh_financial_data"
+                            string="Aktualisieren"
+                            type="object"
+                            class="btn-primary"/>
+                    <button string="Abbrechen"
+                            class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_project_refresh_wizard" model="ir.actions.act_window">
+        <field name="name">Finanzdaten aktualisieren</field>
+        <field name="res_model">project.refresh.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="project.model_project_project"/>
+        <field name="binding_view_types">list</field>
+    </record>
+</odoo>

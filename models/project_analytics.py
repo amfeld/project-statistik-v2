@@ -258,29 +258,20 @@ class ProjectAnalytics(models.Model):
     def _get_project_analytic_account(self, project):
         """
         Get project's analytic account with proper error handling.
-        Returns the analytic account that belongs to the project plan, or None.
+        Returns the analytic account that belongs to plan_id=1 (project plan), or None.
         """
-        try:
-            project_plan = self.env.ref('analytic.analytic_plan_projects', raise_if_not_found=False)
-        except Exception as e:
-            _logger.warning(f"Could not load project plan reference: {e}")
-            return None
-        
-        if not project_plan:
-            _logger.warning("Project analytic plan not found in system")
-            return None
-        
         # Check analytic_account_id first
         if hasattr(project, 'analytic_account_id') and project.analytic_account_id:
-            if hasattr(project.analytic_account_id, 'plan_id') and project.analytic_account_id.plan_id == project_plan:
+            # Verify this is plan_id=1 (project plan in German accounting)
+            if hasattr(project.analytic_account_id, 'plan_id') and project.analytic_account_id.plan_id.id == 1:
                 return project.analytic_account_id
-        
+
         # Fallback to account_id
         if hasattr(project, 'account_id') and project.account_id:
-            if hasattr(project.account_id, 'plan_id') and project.account_id.plan_id == project_plan:
+            if hasattr(project.account_id, 'plan_id') and project.account_id.plan_id.id == 1:
                 return project.account_id
-        
-        _logger.info(f"Project '{project.name}' (ID: {project.id}) has no analytic account linked to project plan")
+
+        _logger.info(f"Project '{project.name}' (ID: {project.id}) has no analytic account linked to plan_id=1")
         return None
 
     def _get_customer_invoices_from_analytic(self, analytic_account):
@@ -288,11 +279,11 @@ class ProjectAnalytics(models.Model):
         Get customer invoices and credit notes via analytic_distribution in account.move.line.
         This is the Odoo v18 way to link invoices to projects.
 
-        IMPORTANT: 
-        - We calculate project portion based on invoice LINE amounts (NET/NETTO only)
-        - Uses price_subtotal (without tax) for consistency
+        IMPORTANT:
+        - We calculate project portion based on invoice LINE amounts
+        - Uses price_total (includes taxes) to match invoice.amount_total
         - Different lines may go to different projects
-        - Only fully paid invoices are counted as paid (conservative approach)
+        - Paid amount calculated proportionally using payment_ratio
 
         Handles both:
         - out_invoice: Customer invoices (positive revenue)
@@ -325,11 +316,8 @@ class ProjectAnalytics(models.Model):
             if not line.analytic_distribution:
                 continue
 
-            # Skip FULL reversals (complete cancellation)
-            # Only check reversed_entry_id (the field that always exists)
-            # A reversal has reversed_entry_id set, the original doesn't
-            if line.move_id.reversed_entry_id:
-                # This is a reversal entry - skip it
+            # Skip reversal entries (Storno) - they cancel out the original entry
+            if line.move_id.reversed_entry_id or line.move_id.reversal_move_id:
                 continue
 
             # Parse the analytic_distribution JSON
@@ -347,8 +335,8 @@ class ProjectAnalytics(models.Model):
                     invoice = line.move_id
 
                     # Calculate this line's contribution to the project
-                    # Use price_subtotal (NET amount without taxes)
-                    line_amount = line.price_subtotal * percentage
+                    # Use price_total (includes taxes) to match invoice.amount_total
+                    line_amount = line.price_total * percentage
 
                     # Credit notes (out_refund) reduce revenue, so subtract them
                     if invoice.move_type == 'out_refund':
@@ -358,15 +346,12 @@ class ProjectAnalytics(models.Model):
 
                     _logger.debug(f"Matched invoice line {line.id}: {invoice.name}, amount={line_amount}, payment_state={invoice.payment_state}")
 
-                    # Calculate paid amount - CONSERVATIVE approach
-                    # Only count invoices that are fully paid to avoid ambiguity
-                    # (We don't know which lines were paid in partial payments)
-                    if invoice.payment_state == 'paid':
-                        result['paid'] += line_amount
-                    elif invoice.payment_state == 'in_payment':
-                        # Invoice is being paid but not fully paid yet
-                        # Don't count as paid (conservative approach)
-                        pass
+                    # Calculate paid amount for this line
+                    # Payment proportion = (invoice.amount_total - invoice.amount_residual) / invoice.amount_total
+                    if abs(invoice.amount_total) > 0:
+                        payment_ratio = (invoice.amount_total - invoice.amount_residual) / invoice.amount_total
+                        line_paid = line_amount * payment_ratio
+                        result['paid'] += line_paid
 
             except Exception as e:
                 _logger.warning(f"Error parsing analytic_distribution for invoice line {line.id}: {e}")
@@ -380,9 +365,9 @@ class ProjectAnalytics(models.Model):
         Get vendor bills and refunds via analytic_distribution in account.move.line.
         This is the Odoo v18 way to link bills to projects.
 
-        IMPORTANT: 
-        - We calculate project portion based on bill LINE amounts (NET/NETTO only)
-        - Uses price_subtotal (without tax) for consistency
+        IMPORTANT:
+        - We calculate project portion based on bill LINE amounts
+        - Uses price_total (includes taxes) to match bill.amount_total
         - Different lines may go to different projects
 
         Handles both:
@@ -413,10 +398,8 @@ class ProjectAnalytics(models.Model):
             if not line.analytic_distribution:
                 continue
 
-            # Skip FULL reversals (complete cancellation)
-            # Only check reversed_entry_id (the field that always exists)
-            if line.move_id.reversed_entry_id:
-                # This is a reversal entry - skip it
+            # Skip reversal entries (Storno) - they cancel out the original entry
+            if line.move_id.reversed_entry_id or line.move_id.reversal_move_id:
                 continue
 
             # Parse the analytic_distribution JSON
@@ -434,8 +417,8 @@ class ProjectAnalytics(models.Model):
                     bill = line.move_id
 
                     # Calculate this line's contribution to the project
-                    # Use price_subtotal (NET amount without taxes)
-                    line_amount = line.price_subtotal * percentage
+                    # Use price_total (includes taxes) to match bill.amount_total
+                    line_amount = line.price_total * percentage
 
                     # Vendor refunds (in_refund) reduce costs, so subtract them
                     if bill.move_type == 'in_refund':
